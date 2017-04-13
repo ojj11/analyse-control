@@ -1,0 +1,23 @@
+{
+  "name": "analyse-control",
+  "version": "1.0.0",
+  "description": "a control flow analyser for JavaScript",
+  "main": "control.js",
+  "dependencies": {
+    "acorn": "^3.0.4",
+    "morphic": "^1.0.3"
+  },
+  "devDependencies": {
+    "mocha": "^3.2.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "control",
+    "flow",
+    "analyser"
+  ],
+  "author": "Olli Jones",
+  "license": "MIT"
+}
