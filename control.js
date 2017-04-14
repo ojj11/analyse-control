@@ -4,21 +4,6 @@ var morphic = require("morphic");
 var assert = require("assert");
 var acorn = require("acorn");
 
-var either = function(alternatives, named) {
-  var matcher = morphic.makeMatcher(function(obj) {
-    return alternatives.indexOf(obj) != -1;
-  });
-  return new matcher(named);
-};
-
-var matchArray = morphic.makeMatcher(function(obj) {
-  return Boolean(obj && obj instanceof Array);
-});
-
-var named = morphic.makeMatcher(function(_) {
-  return true;
-});
-
 function flow(a, b) {
   if (a == undefined || b == undefined) {
     throw new Error("we tried to create a flow between undefined points");
@@ -30,16 +15,6 @@ function flow(a, b) {
   };
 }
 
-function hoist(a, b) {
-  if (a == undefined || b == undefined) {
-    throw new Error("we tried to create a hoisting flow between undefined points");
-  }
-  return {
-    "type": "hoist",
-    "start": a,
-    "end": b
-  };
-}
 
 function flatten(array) {
   var out = [];
@@ -47,102 +22,11 @@ function flatten(array) {
   return out;
 }
 
-function labels(id) {
-  var labelsMap = {};
-  for (var i = 1; i < arguments.length; i += 1) {
-    labelsMap[arguments[i]] = {
-      node: id,
-      type: arguments[i]
-    };
-  }
-  return labelsMap;
-}
-
-// START OF GENERATE LABELS
-
-  var flattenNodes = [];
-
-  var generateLabels = new morphic();
-
-  generateLabels.with(
-    {
-      "type": morphic.String("type")
-    }
-  ).then(
-      (r, input) => {
-        var flatCopy = Object.assign({}, input);
-        var flatID = flattenNodes.push(flatCopy) - 1;
-
-        if (r.type == "Program") {
-          input.labels = labels(flatID, "start", "endOfDeclarations", "end");
-        } else if (r.type == "VariableDeclarator" || r.type == "FunctionDeclaration") {
-          input.labels = labels(flatID, "start", "startHoist", "endHoist", "end");
-        } else {
-          input.labels = labels(flatID, "start", "end");
-        }
-
-        Object.keys(flatCopy).forEach(key => {
-          flatCopy[key] = generateLabels(input[key]);
-        });
-
-        flatCopy.nodeID = flatID;
-
-        return flatID;
-    }
-  );
-
-  generateLabels.with(
-    matchArray("array")
-  ).then(
-    r => r.array.map(generateLabels)
-  );
-
-  // Fail silently:
-  generateLabels.otherwise().returnArgument(0);
-
-// END OF GENERATE LABELS
-
 // START OF HOIST DECLARATIONS
 
   // We have to hoist all the declarations
   // - var abc
   // - function abc() {...}
-
-  var hoistDeclarations = new morphic();
-
-  hoistDeclarations.with(
-    {
-      "type": either([
-        "IfStatement",
-        "LabeledStatement",
-        "BlockStatement",
-        "WhileStatement",
-        "DoWhileStatement",
-        "ForStatement",
-        "ForOfStatement",
-        "Program",
-        "VariableDeclaration",
-        "VariableDeclarator",
-        "FunctionDeclaration"
-      ], "type")
-    }
-  ).then(
-    (r, input) => {
-      if (r.type == "VariableDeclarator" || r.type == "FunctionDeclaration") {
-        return [input];
-      }
-      var out = flatten(Object.keys(input).map(key => hoistDeclarations(input[key])))
-      return out;
-    }
-  );
-
-  hoistDeclarations.with(
-    matchArray("array")
-  ).then(
-    (_, arr) => flatten(arr.map(element => hoistDeclarations(element)))
-  )
-
-  hoistDeclarations.otherwise().return([]);
 
 // END OF HOISTING DECLARATIONS
 
@@ -488,19 +372,6 @@ generateLabels(ast);
 
 console.log("generating labels took " + (Date.now() - start));
 start = Date.now();
-
-var declarations = hoistDeclarations(ast);
-var varFlows = [];
-var varEnd = ast.labels.start;
-declarations.forEach(varDec => {
-  varFlows.push(
-    hoist(varEnd, varDec.labels.startHoist),
-    hoist(varDec.labels.startHoist, varDec.labels.endHoist)
-  );
-  varEnd = varDec.labels.endHoist;
-});
-
-varFlows.push(hoist(varEnd, ast.labels.endOfDeclarations));
 
 console.log("hoisting took " + (Date.now() - start));
 start = Date.now();
