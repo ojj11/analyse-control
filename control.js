@@ -1,8 +1,9 @@
 // @flow
 
 var morphic = require("morphic");
-var assert = require("assert");
-var acorn = require("acorn");
+var either = require("./matchers.js").either;
+var matchArray = require("./matchers.js").matchArray;
+var flatten = require("./utils.js").flatten;
 
 function flow(a, b) {
   if (a == undefined || b == undefined) {
@@ -15,373 +16,310 @@ function flow(a, b) {
   };
 }
 
-
-function flatten(array) {
-  var out = [];
-  array.forEach(array => out.push.apply(out, array));
-  return out;
+function generateFlowsThroughArrayWithStartAndEnd(r) {
+  var nodes = [r.startNode];
+  r.array.forEach(element => {
+    nodes.push(
+      {node: element, type: "start"},
+      {node: element, type: "end"});
+  });
+  nodes.push(r.endNode);
+  var flows = [];
+  for (var i = 0; i < nodes.length; i += 2) {
+    flows.push(flow(nodes[i], nodes[i+1]));
+  }
+  return flows;
 }
 
-// START OF HOIST DECLARATIONS
+function generateFlowsThroughArray(r) {
+  r.startNode = {node: r.nodeId, type: "start"};
+  r.endNode = {node: r.nodeId, type: "end"};
+  return generateFlowsThroughArrayWithStartAndEnd(r);
+}
 
-  // We have to hoist all the declarations
-  // - var abc
-  // - function abc() {...}
+function generateFlowsThroughSingleElement(r) {
+  return [
+    flow({node: r.nodeId, type: "start"}, {node: r.element, type: "start"}),
+    // r.element.start -> r.element.end will be calculated by that element
+    flow({node: r.element, type: "end"}, {node: r.nodeId, type: "end"})
+  ];
+}
 
-// END OF HOISTING DECLARATIONS
+var flowProgram = new morphic();
 
-// START FLOW PROGRAM
-
-  // Generates a flow through an array, connecting it to the start and end
-  // variables
-  function generateFlowsThroughArray(flowResolver) {
-    return (function(r) {
-      var flows = [];
-      var start = r.start;
-      r.array.forEach(element => {
-        flows.push.apply(flows, flowResolver(element));
-        flows.push(flow(start, element.labels.start));
-        start = element.labels.end;
-      });
-      flows.push(flow(start, r.end));
-      return flows;
-    });
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": either([
+      "CallExpression",
+      "NewExpression"
+    ]),
+    "callee": morphic.number("callee"),
+    "arguments": matchArray("args")
   }
+).then(
+  r => {
+    // function (a1, a2, ...) -> start -> callee -> a1 -> a2 -> end
 
-  function generateFlowsThroughSingleElement(flowResolver) {
-    return (function(r) {
-      var flows = [];
-      flows.push.apply(flows, flowResolver(r.element));
-      flows.push(flow(r.start, r.element.labels.start));
-      flows.push(flow(r.element.labels.end, r.end));
-      return flows;
+    var flows = generateFlowsThroughArrayWithStartAndEnd({
+      array: r.args,
+      startNode: {node: r.callee, type: "end"},
+      endNode: {node: r.nodeId, type: "end"}
     });
+
+    flows.push(
+      flow({node: r.nodeId, type: "start"}, {node: r.callee, type: "start"}));
+
+    return flows;
   }
+);
 
-  var flowProgram = new morphic();
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": either([
+      "Literal",
+      "Identifier",
+      "DebuggerStatement",
+      "ThisExpression",
+      "EmptyStatement",
+      "BreakStatement",
+      "ContinueStatement",
+      "FunctionExpression",
+      "FunctionDeclaration",
+      "ArrowFunctionExpression"
+    ])
+  }
+).then(
+  r => [
+    flow({node: r.nodeId, type: "start"}, {node: r.nodeId, type: "end"})
+  ]
+);
 
-  flowProgram.with(
-    {
-      "type": either([
-        "CallExpression",
-        "NewExpression"
-      ]),
-      "callee": morphic.Object("callee"),
-      "arguments": morphic.Object("args"),
-      "labels": {
-        "start": named("start"),
-        "end": named("end")
-      }
-    }
-  ).then(
-    r => {
-      var flows = [];
-      flows.push.apply(flows, flowProgram(r.callee));
-      flows.push.apply(flows, generateFlowsThroughArray(flowProgram)({
-        array: r.args,
-        start: r.callee.labels.end,
-        end: r.end
-      }));
-      flows.push(
-        flow(r.start, r.callee.labels.start)
-      );
-      return flows;
-    }
-  );
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "Program",
+    "body": matchArray("array")
+  }
+).then(generateFlowsThroughArray);
 
-  flowProgram.with(
-    {
-      "type": either([
-        "Literal",
-        "Identifier",
-        "DebuggerStatement",
-        "ThisExpression"
-      ]),
-      "labels": {
-        "start": named("start"),
-        "end": named("end")
-      }
-    }
-  ).then(
-    r => {
-      return [flow(r.start, r.end)];
-    }
-  );
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "BlockStatement",
+    "body": matchArray("array")
+  }
+).then(generateFlowsThroughArray);
 
-  // console.log(require("util").inspect(flowProgram.introspect(), {depth:null, colors:true, showHidden: true}));
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "ExpressionStatement",
+    "expression": morphic.number("element")
+  }
+).then(generateFlowsThroughSingleElement);
 
-  flowProgram.with(
-    {
-      "type": "Program",
-      "body": matchArray("array"),
-      "labels": {
-        "endOfDeclarations": named("start"),
-        "end": named("end")
-      }
-    }
-  ).then(
-    generateFlowsThroughArray(flowProgram)
-  );
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": either([
+      "UnaryExpression",
+      "UpdateExpression",
+    ]),
+    "argument": morphic.number("element")
+  }
+).then(generateFlowsThroughSingleElement);
 
-  flowProgram.with(
-    {
-      "type": "BlockStatement",
-      "body": matchArray("array"),
-      "labels": {
-        "start": named("start"),
-        "end": named("end")
-      }
-    }
-  ).then(
-    generateFlowsThroughArray(flowProgram)
-  );
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "ReturnStatement",
+    "argument": null
+  }
+).return([]);
 
-  flowProgram.with(
-    {
-      "type": "ExpressionStatement",
-      "expression": morphic.Object("element"),
-      "labels": {
-        "start": named("start"),
-        "end": named("end")
-      }
-    }
-  ).then(
-    generateFlowsThroughSingleElement(flowProgram)
-  );
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": either([
+      "ReturnStatement",
+      "ThrowStatement"
+    ]),
+    "argument": morphic.number("element")
+  }
+).then(r => [
+  flow({node: r.nodeId, type: "start"}, {node: r.element, type: "start"})
+]);
 
-  flowProgram.with(
-    {
-      "type": "VariableDeclaration",
-      "declarations": matchArray("array"),
-      "labels": {
-        "start": named("start"),
-        "end": named("end")
-      }
-    }
-  ).then(
-    generateFlowsThroughArray(flowProgram)
-  );
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "VariableDeclaration",
+    "declarations": matchArray("array")
+  }
+).then(generateFlowsThroughArray);
 
-  flowProgram.with(
-    {
-      "type": "VariableDeclarator",
-      "init": morphic.Object("element"),
-      "labels": {
-        "start": named("start"),
-        "end": named("end")
-      }
-    }
-  ).then(
-    generateFlowsThroughSingleElement(flowProgram)
-  );
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "VariableDeclarator",
+    "init": morphic.number("element")
+  }
+).then(generateFlowsThroughSingleElement);
 
-  flowProgram.with(
-    {
-      "type": "IfStatement",
-      "test": morphic.Object("test"),
-      "consequent": morphic.Object("consequent"),
-      "alternate": morphic.Object("alternate"),
-      "labels": {
-        "start": named("start"),
-        "end": named("end")
-      }
-    }
-  ).then(
-    r => {
-      var flows = [];
-      flows.push.apply(flows, flowProgram(r.test));
-      flows.push.apply(flows, flowProgram(r.consequent));
-      flows.push.apply(flows, flowProgram(r.alternate));
-      flows.push(
-        flow(r.start, r.test.labels.start),
-        flow(r.test.labels.end, r.consequent.labels.start),
-        flow(r.test.labels.end, r.alternate.labels.start),
-        flow(r.consequent.labels.end, r.end),
-        flow(r.alternate.labels.end, r.end)
-      );
-      return flows;
-    }
-  );
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "IfStatement",
+    "test": morphic.number("test"),
+    "consequent": morphic.number("consequent"),
+    "alternate": morphic.number("alternate")
+  }
+).then(
+  r => [
+    flow({node: r.nodeId, type: "start"}, {node: r.test, type: "start"}),
+    flow({node: r.test, type: "end"}, {node: r.consequent, type: "start"}),
+    flow({node: r.test, type: "end"}, {node: r.alternate, type: "start"}),
+    flow({node: r.consequent, type: "end"}, {node: r.nodeId, type: "end"}),
+    flow({node: r.alternate, type: "end"}, {node: r.nodeId, type: "end"})
+  ]
+);
 
-  flowProgram.with(
-    {
-      "type": "IfStatement",
-      "test": morphic.Object("test"),
-      "consequent": morphic.Object("consequent"),
-      "labels": {
-        "start": named("start"),
-        "end": named("end")
-      }
-    }
-  ).then(
-    r => {
-      var flows = [];
-      flows.push.apply(flows, flowProgram(r.test));
-      flows.push.apply(flows, flowProgram(r.consequent));
-      flows.push(
-        flow(r.start, r.test.labels.start),
-        flow(r.test.labels.end, r.end),
-        flow(r.test.labels.end, r.consequent.labels.start),
-        flow(r.consequent.labels.end, r.end)
-      );
-      return flows;
-    }
-  );
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "IfStatement",
+    "test": morphic.number("test"),
+    "consequent": morphic.number("consequent"),
+    "alternate": null
+  }
+).then(
+  r => [
+    flow({node: r.nodeId, type: "start"}, {node: r.test, type: "start"}),
+    flow({node: r.test, type: "end"}, {node: r.nodeId, type: "end"}),
+    flow({node: r.test, type: "end"}, {node: r.consequent, type: "start"}),
+    flow({node: r.consequent, type: "end"}, {node: r.nodeId, type: "end"})
+  ]
+);
 
-  flowProgram.with(
-    {
-      "type": "WhileStatement",
-      "test": morphic.Object("test"),
-      "body": morphic.Object("body"),
-      "labels": {
-        "start": named("start"),
-        "end": named("end")
-      }
-    }
-  ).then(
-    r => {
-      var flows = [];
-      flows.push.apply(flows, flowProgram(r.test));
-      flows.push.apply(flows, flowProgram(r.body));
-      flows.push(
-        flow(r.start, r.test.labels.start),
-        flow(r.test.labels.end, r.end),
-        flow(r.test.labels.end, r.body.labels.start),
-        flow(r.body.labels.end, r.test.labels.start)
-      );
-      return flows;
-    }
-  );
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "WhileStatement",
+    "test": morphic.number("test"),
+    "body": morphic.number("body")
+  }
+).then(
+  r => [
+    flow({node: r.nodeId, type: "start"}, {node: r.test, type: "start"}),
+    flow({node: r.test, type: "end"}, {node: r.nodeId, type: "end"}),
+    flow({node: r.test, type: "end"}, {node: r.body, type: "start"}),
+    flow({node: r.body, type: "end"}, {node: r.test, type: "start"})
+  ]
+);
 
-  flowProgram.with(
-    {
-      "type": "DoWhileStatement",
-      "test": morphic.Object("test"),
-      "body": morphic.Object("body"),
-      "labels": {
-        "start": named("start"),
-        "end": named("end")
-      }
-    }
-  ).then(
-    r => {
-      var flows = [];
-      flows.push.apply(flows, flowProgram(r.test));
-      flows.push.apply(flows, flowProgram(r.body));
-      flows.push(
-        flow(r.start, r.body.labels.start),
-        flow(r.body.labels.end, r.test.labels.start),
-        flow(r.test.labels.end, r.body.labels.start),
-        flow(r.test.labels.end, r.end)
-      );
-      return flows;
-    }
-  );
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "DoWhileStatement",
+    "test": morphic.number("test"),
+    "body": morphic.number("body")
+  }
+).then(
+  r => [
+    flow({node: r.nodeId, type: "start"}, {node: r.body, type: "start"}),
+    flow({node: r.body, type: "end"}, {node: r.test, type: "start"}),
+    flow({node: r.test, type: "end"}, {node: r.body, type: "start"}),
+    flow({node: r.test, type: "end"}, {node: r.nodeId, type: "end"})
+  ]
+);
 
-  flowProgram.with(
-    {
-      "type": "WithStatement",
-      "object": morphic.Object("object"),
-      "body": morphic.Object("body"),
-      "labels": {
-        "start": named("start"),
-        "end": named("end")
-      }
-    }
-  ).then(
-    r => {
-      var flows = [];
-      flows.push.apply(flows, flowProgram(r.object));
-      flows.push.apply(flows, flowProgram(r.body));
-      flows.push(
-        flow(r.start, r.object.labels.start),
-        flow(r.object.labels.end, r.body.labels.start),
-        flow(r.body.labels.end, r.end)
-      );
-      return flows;
-    }
-  );
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "WithStatement",
+    "object": morphic.number("object"),
+    "body": morphic.number("body")
+  }
+).then(
+  r => [
+    flow({node: r.nodeId, type: "start"}, {node: r.object, type: "start"}),
+    flow({node: r.object, type: "end"}, {node: r.body, type: "start"}),
+    flow({node: r.body, type: "end"}, {node: r.nodeId, type: "end"})
+  ]
+);
 
-  flowProgram.with(
-    {
-      "type": "ArrayExpression",
-      "elements": matchArray("elements"),
-      "labels": {
-        "start": named("start"),
-        "end": named("end")
-      }
-    }
-  ).then(
-    r => generateFlowsThroughArray(flowProgram)({
-      array: r.elements.filter((x) => x != null),
-      start: r.start,
-      end: r.end
-    })
-  );
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "ArrayExpression",
+    "elements": matchArray("elements")
+  }
+).then(
+  r => generateFlowsThroughArray({
+    array: r.elements.filter(x => x != null),
+    nodeId: r.nodeId
+  })
+);
 
-  flowProgram.with(
-    {
-      "type": "ObjectExpression",
-      "properties": morphic.Object("array"),
-      "labels": {
-        "start": named("start"),
-        "end": named("end")
-      }
-    }
-  ).then(
-    generateFlowsThroughArray(flowProgram)
-  );
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "ObjectExpression",
+    "properties": matchArray("array")
+  }
+).then(generateFlowsThroughArray);
 
-  flowProgram.with(
-    {
-      "type": "Property",
-      "value": morphic.Object("element"),
-      "labels": {
-        "start": named("start"),
-        "end": named("end")
-      }
-    }
-  ).then(
-    generateFlowsThroughSingleElement(flowProgram)
-  );
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "Property",
+    "value": morphic.number("element")
+  }
+).then(generateFlowsThroughSingleElement);
 
-  flowProgram.otherwise().then(
-    (_, input) => {
-      console.log("no specific rules for ", input.type);
-      return [flow(input.labels.start, input.labels.end)];
-    }
-  );
+flowProgram.otherwise().then(
+  (_1, _2, input) => {
+    console.log("no specific rules for ", input.type);
+  }
+);
+
+module.exports = function controlFlow(nodeList) {
+  return flatten(nodeList.map((element, id) => flowProgram(id, element)));
+}
+
 
 // END FLOW PROGRAM
-
-var start = Date.now();
-
-var tester = require("fs").readFileSync("components/Everything/test.js").toString().split(/===+/);
-
-console.log("read took " + (Date.now() - start));
-start = Date.now();
-
-var ast = acorn.parse(tester[0]);
-
-console.log("AST gen took " + (Date.now() - start));
-start = Date.now();
-
-var expected = tester[1].trim();
-
-generateLabels(ast);
-
-console.log("generating labels took " + (Date.now() - start));
-start = Date.now();
-
-console.log("hoisting took " + (Date.now() - start));
-start = Date.now();
-
-// console.log(ast);
-
-var flows = varFlows.concat(flowProgram(ast));
-
-console.log("flowing took " + (Date.now() - start));
-start = Date.now();
+//
+// var start = Date.now();
+//
+// var tester = require("fs").readFileSync("components/Everything/test.js").toString().split(/===+/);
+//
+// console.log("read took " + (Date.now() - start));
+// start = Date.now();
+//
+// var ast = acorn.parse(tester[0]);
+//
+// console.log("AST gen took " + (Date.now() - start));
+// start = Date.now();
+//
+// var expected = tester[1].trim();
+//
+// generateLabels(ast);
+//
+// console.log("generating labels took " + (Date.now() - start));
+// start = Date.now();
+//
+// console.log("hoisting took " + (Date.now() - start));
+// start = Date.now();
+//
+// // console.log(ast);
+//
+// var flows = varFlows.concat(flowProgram(ast));
+//
+// console.log("flowing took " + (Date.now() - start));
+// start = Date.now();
 
 // var flows2 = flattenNodes.map((node, key) => {
 //   node.flows = flows.filter(flow => flow.end.node == key || flow.start.node == key);

@@ -6,7 +6,7 @@
   "dependencies": {
     "acorn": "^3.3.0",
     "immutable": "^3.8.1",
-    "morphic": "^1.0.4"
+    "morphic": "^1.0.5"
   },
   "devDependencies": {
     "mocha": "^3.2.0"
