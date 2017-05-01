@@ -702,25 +702,289 @@ describe("simple control flow analysis", function() {
 
   });
 
-  it("should output flow for a LabeledStatement node");
-  it("should output flow for a SwitchStatement node");
-  it("should output flow for a TryStatement node");
+  it("should output flow for a LogicalExpression node", function() {
+    // nodeList for an LogicalExpression `x || y`
+    var nodeList = new List([
+      {
+        "type": "LogicalExpression",
+        "left": 1,
+        "operator": "||",
+        "right": 2
+      }
+    ]);
+
+    var stringRepresentation = control(nodeList).map(r =>
+      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
+    );
+
+    assert.equal(4, stringRepresentation.length);
+
+    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+
+    // case where first operand was enough to calculate result:
+    assert.ok(stringRepresentation.indexOf("1.end -> 0.end") != -1);
+
+    // case where second operand was needed:
+    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
+    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+  });
+
+  it("should output flow for a SequenceExpression node", function() {
+    // nodeList for an SequenceExpression `(1,2,3)`
+    var nodeList = new List([
+      {
+        "type": "SequenceExpression",
+        "expressions": [1,2,3]
+      }
+    ]);
+
+    var stringRepresentation = control(nodeList).map(r =>
+      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
+    );
+
+    assert.equal(4, stringRepresentation.length);
+
+    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
+    assert.ok(stringRepresentation.indexOf("2.end -> 3.start") != -1);
+    assert.ok(stringRepresentation.indexOf("3.end -> 0.end") != -1);
+  });
+
+  it("should output flow for a LabeledStatement node", function() {
+    // nodeList for an LabeledStatement `name: {}`
+    var nodeList = new List([
+      {
+        "type": "LabeledStatement",
+        "body": 1,
+        "label": 2
+      }
+    ]);
+
+    var stringRepresentation = control(nodeList).map(r =>
+      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
+    );
+
+    assert.equal(2, stringRepresentation.length);
+
+    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+    assert.ok(stringRepresentation.indexOf("1.end -> 0.end") != -1);
+  });
+
+  it("should output flow for a BinaryExpression node", function() {
+    // nodeList for an BinaryExpression `x == x`
+    var nodeList = new List([
+      {
+        "type": "BinaryExpression",
+        "left": 1,
+        "operator": "==",
+        "right": 2
+      }
+    ]);
+
+    var stringRepresentation = control(nodeList).map(r =>
+      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
+    );
+
+    assert.equal(3, stringRepresentation.length);
+
+    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
+    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+  });
+
+  it("should output flow for a AssignmentExpression node", function() {
+    // nodeList for an AssignmentExpression `x = 42`
+    var nodeList = new List([
+      {
+        "type": "AssignmentExpression",
+        "operator": "=",
+        "left": 1,
+        "right": 2
+      }
+    ]);
+
+    var stringRepresentation = control(nodeList).map(r =>
+      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
+    );
+
+    assert.equal(2, stringRepresentation.length);
+
+    assert.ok(stringRepresentation.indexOf("0.start -> 2.start") != -1);
+    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+  });
+
+  it("should output flow for a ConditionalExpression node", function() {
+    // nodeList for an ConditionalExpression `x ? 1 : 2`
+    var nodeList = new List([
+      {
+        "type": "ConditionalExpression",
+        "test": 1,
+        "consequent": 2,
+        "alternate": 3
+      }
+    ]);
+
+    var stringRepresentation = control(nodeList).map(r =>
+      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
+    );
+
+    assert.equal(5, stringRepresentation.length);
+
+    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+
+    // case where test is true
+    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
+    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+
+    // case where test is false
+    assert.ok(stringRepresentation.indexOf("1.end -> 3.start") != -1);
+    assert.ok(stringRepresentation.indexOf("3.end -> 0.end") != -1);
+  });
+
+  it("should output flow for a computed MemberExpression node", function() {
+    // nodeList for an MemberExpression `x[y]`
+    var nodeList = new List([
+      {
+        "type": "MemberExpression",
+        "object": 1,
+        "property": 2,
+        "computed": true
+      }
+    ]);
+
+    var stringRepresentation = control(nodeList).map(r =>
+      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
+    );
+
+    assert.equal(3, stringRepresentation.length);
+
+    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
+    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+  });
+
+  it("should output flow for a non-computed MemberExpression node", function() {
+    // nodeList for an MemberExpression `x.y`
+    var nodeList = new List([
+      {
+        "type": "MemberExpression",
+        "object": 1,
+        "property": 2,
+        "computed": false
+      }
+    ]);
+
+    var stringRepresentation = control(nodeList).map(r =>
+      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
+    );
+
+    assert.equal(2, stringRepresentation.length);
+
+    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+    assert.ok(stringRepresentation.indexOf("1.end -> 0.end") != -1);
+  });
+
+  it("should output flow for a SwitchStatement node", function() {
+    // nodeList for an SwitchStatement `switch(x) {case 1: break; case 2: break; default: break;}`
+    var nodeList = new List([
+      {
+        "type": "SwitchStatement",
+        "discriminant": 1,
+        "cases": [2,3]
+      }
+    ]);
+
+    var stringRepresentation = control(nodeList).map(r =>
+      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
+    );
+
+    assert.equal(4, stringRepresentation.length);
+
+    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
+    assert.ok(stringRepresentation.indexOf("2.end -> 3.start") != -1);
+    assert.ok(stringRepresentation.indexOf("3.end -> 0.end") != -1);
+  });
+
+  it("should output flow for a TryStatement node with catch and final block", function() {
+    // nodeList for an TryStatement `try {} catch(e) {} finally {}`
+    var nodeList = new List([
+      {
+        "type": "TryStatement",
+        "block": 1,
+        "handler": 2,
+        "finalizer": 3
+      }
+    ]);
+
+    var stringRepresentation = control(nodeList).map(r =>
+      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
+    );
+
+    assert.equal(4, stringRepresentation.length);
+
+    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+    assert.ok(stringRepresentation.indexOf("1.end -> 3.start") != -1);
+    assert.ok(stringRepresentation.indexOf("2.end -> 3.start") != -1);
+    assert.ok(stringRepresentation.indexOf("3.end -> 0.end") != -1);
+  });
+
+  it("should output flow for a TryStatement node with catch block", function() {
+    // nodeList for an TryStatement `try {} catch(e) {}`
+    var nodeList = new List([
+      {
+        "type": "TryStatement",
+        "block": 1,
+        "handler": 2,
+        "finalizer": null
+      }
+    ]);
+
+    var stringRepresentation = control(nodeList).map(r =>
+      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
+    );
+
+    assert.equal(3, stringRepresentation.length);
+
+    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+    assert.ok(stringRepresentation.indexOf("1.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+  });
+
+  it("should output flow for a TryStatement node with final block", function() {
+    // nodeList for an TryStatement `try {} catch(e) {} finally {}`
+    var nodeList = new List([
+      {
+        "type": "TryStatement",
+        "block": 1,
+        "handler": null,
+        "finalizer": 3
+      }
+    ]);
+
+    var stringRepresentation = control(nodeList).map(r =>
+      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
+    );
+
+    assert.equal(3, stringRepresentation.length);
+
+    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+    assert.ok(stringRepresentation.indexOf("1.end -> 3.start") != -1);
+    assert.ok(stringRepresentation.indexOf("3.end -> 0.end") != -1);
+  });
+
   it("should output flow for a ForStatement node");
+  it("should output flow for a SwitchCase node");
+  it("should output flow for a CatchClause node");
   it("should output flow for a ForInStatement node");
+
+  // ECMAScript6 node types are a WIP:
   it("should output flow for a ForOfStatement node");
   it("should output flow for a LetStatement node");
-  it("should output flow for a SequenceExpression node");
-  it("should output flow for a BinaryExpression node");
-  it("should output flow for a AssignmentExpression node");
-  it("should output flow for a LogicalExpression node");
-  it("should output flow for a ConditionalExpression node");
-  it("should output flow for a MemberExpression node");
   it("should output flow for a YieldExpression node");
   it("should output flow for a ComprehensionExpression node");
   it("should output flow for a GeneratorExpression node");
   it("should output flow for a LetExpression node");
-  it("should output flow for a SwitchCase node");
-  it("should output flow for a CatchClause node");
   it("should output flow for a ComprehensionBlock node");
   it("should output flow for a ComprehensionIf node");
 
