@@ -310,8 +310,7 @@ describe("simple control flow analysis", function() {
 
     var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(1, stringRepresentation.size);
-    assert.ok(stringRepresentation.includes("0.start -> 0.end"));
+    assert.equal(0, stringRepresentation.size);
 
   });
 
@@ -326,8 +325,7 @@ describe("simple control flow analysis", function() {
 
     var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(1, stringRepresentation.size);
-    assert.ok(stringRepresentation.includes("0.start -> 0.end"));
+    assert.equal(0, stringRepresentation.size);
 
   });
 

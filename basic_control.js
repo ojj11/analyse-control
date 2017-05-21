@@ -3,18 +3,7 @@
 var morphic = require("morphic");
 var either = require("./matchers.js").either;
 var matchArray = require("./matchers.js").matchArray;
-var flatten = require("./utils.js").flatten;
-
-function flow(a, b) {
-  if (a == undefined || b == undefined) {
-    throw new Error("we tried to create a flow between undefined points");
-  }
-  return {
-    "type": "flow",
-    "start": a,
-    "end": b
-  };
-}
+var flow = require("./utils.js").flow;
 
 function generateFlowsThroughArrayWithStartAndEnd(r) {
   var nodes = [r.startNode];
@@ -83,8 +72,6 @@ flowProgram.with(
       "DebuggerStatement",
       "ThisExpression",
       "EmptyStatement",
-      "BreakStatement",
-      "ContinueStatement",
       "FunctionExpression",
       "FunctionDeclaration",
       "ArrowFunctionExpression"
@@ -95,6 +82,18 @@ flowProgram.with(
     flow({node: r.nodeId, type: "start"}, {node: r.nodeId, type: "end"})
   ]
 );
+
+// this is the end of the flow for these statements, we revisit these in
+// complex_control.js
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": either([
+      "BreakStatement",
+      "ContinueStatement"
+    ])
+  }
+).return([]);
 
 flowProgram.with(
   morphic.number("nodeId"),
