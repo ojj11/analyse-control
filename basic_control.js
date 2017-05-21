@@ -420,84 +420,272 @@ flowProgram.with(
   }
 ).then(generateFlowsThroughArray);
 
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "ForStatement",
+    "init": morphic.number("init"),
+    "test": morphic.number("test"),
+    "update": morphic.number("update"),
+    "body": morphic.number("body")
+  }
+).then(r => [
+    flow(
+      {node: r.nodeId, type: "start"},
+      {node: r.init, type: "start"}),
+    flow(
+      {node: r.init, type: "end"},
+      {node: r.test, type: "start"}),
+    flow(
+      {node: r.test, type: "end"},
+      {node: r.nodeId, type: "end"}),
+    flow(
+      {node: r.test, type: "end"},
+      {node: r.body, type: "start"}),
+    flow(
+      {node: r.body, type: "end"},
+      {node: r.update, type: "start"}),
+    flow(
+      {node: r.update, type: "end"},
+      {node: r.test, type: "start"})
+  ]
+);
+
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "ForStatement",
+    "init": null,
+    "test": morphic.number("test"),
+    "update": morphic.number("update"),
+    "body": morphic.number("body")
+  }
+).then(r => [
+    flow(
+      {node: r.nodeId, type: "start"},
+      {node: r.test, type: "start"}),
+    flow(
+      {node: r.test, type: "end"},
+      {node: r.nodeId, type: "end"}),
+    flow(
+      {node: r.test, type: "end"},
+      {node: r.body, type: "start"}),
+    flow(
+      {node: r.body, type: "end"},
+      {node: r.update, type: "start"}),
+    flow(
+      {node: r.update, type: "end"},
+      {node: r.test, type: "start"})
+  ]
+);
+
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "ForStatement",
+    "init": morphic.number("init"),
+    "test": null,
+    "update": morphic.number("update"),
+    "body": morphic.number("body")
+  }
+).then(r => [
+    flow(
+      {node: r.nodeId, type: "start"},
+      {node: r.init, type: "start"}),
+    flow(
+      {node: r.init, type: "end"},
+      {node: r.body, type: "start"}),
+    flow(
+      {node: r.body, type: "end"},
+      {node: r.update, type: "start"}),
+    flow(
+      {node: r.update, type: "end"},
+      {node: r.body, type: "start"})
+  ]
+);
+
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "ForStatement",
+    "init": morphic.number("init"),
+    "test": morphic.number("test"),
+    "update": null,
+    "body": morphic.number("body")
+  }
+).then(r => [
+    flow(
+      {node: r.nodeId, type: "start"},
+      {node: r.init, type: "start"}),
+    flow(
+      {node: r.init, type: "end"},
+      {node: r.test, type: "start"}),
+    flow(
+      {node: r.test, type: "end"},
+      {node: r.nodeId, type: "end"}),
+    flow(
+      {node: r.test, type: "end"},
+      {node: r.body, type: "start"}),
+    flow(
+      {node: r.body, type: "end"},
+      {node: r.test, type: "start"})
+  ]
+);
+
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "ForStatement",
+    "init": morphic.number("init"),
+    "test": null,
+    "update": null,
+    "body": morphic.number("body")
+  }
+).then(r => [
+    flow(
+      {node: r.nodeId, type: "start"},
+      {node: r.init, type: "start"}),
+    flow(
+      {node: r.init, type: "end"},
+      {node: r.body, type: "start"}),
+    flow(
+      {node: r.body, type: "end"},
+      {node: r.body, type: "start"})
+  ]
+);
+
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "ForStatement",
+    "init": null,
+    "test": null,
+    "update": morphic.number("update"),
+    "body": morphic.number("body")
+  }
+).then(r => [
+    flow(
+      {node: r.nodeId, type: "start"},
+      {node: r.body, type: "start"}),
+    flow(
+      {node: r.body, type: "end"},
+      {node: r.update, type: "start"}),
+    flow(
+      {node: r.update, type: "end"},
+      {node: r.body, type: "start"})
+  ]
+);
+
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "ForStatement",
+    "init": null,
+    "test": morphic.number("test"),
+    "update": null,
+    "body": morphic.number("body")
+  }
+).then(r => [
+    flow(
+      {node: r.nodeId, type: "start"},
+      {node: r.test, type: "start"}),
+    flow(
+      {node: r.test, type: "end"},
+      {node: r.nodeId, type: "end"}),
+    flow(
+      {node: r.test, type: "end"},
+      {node: r.body, type: "start"}),
+    flow(
+      {node: r.body, type: "end"},
+      {node: r.test, type: "start"})
+  ]
+);
+
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "ForStatement",
+    "init": null,
+    "test": null,
+    "update": null,
+    "body": morphic.number("body")
+  }
+).then(r => [
+    flow(
+      {node: r.nodeId, type: "start"},
+      {node: r.body, type: "start"}),
+    flow(
+      {node: r.body, type: "end"},
+      {node: r.body, type: "start"})
+  ]
+);
+
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "SwitchCase",
+    "test": morphic.number("test"),
+    "consequent": matchArray("consequents")
+  }
+).then(
+  r => generateFlowsThroughArrayWithStartAndEnd({
+    "array": r.consequents,
+    "startNode": {node: r.test, type: "end"},
+    "endNode": {node: r.nodeId, type: "end"}
+  }).concat(
+    flow(
+      {node: r.nodeId, type: "start"},
+      {node: r.test, type: "start"}))
+);
+
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "CatchClause",
+    "body": morphic.number("body")
+  }
+).then(r => [
+    flow(
+      {node: r.nodeId, type: "start"},
+      {node: r.body, type: "start"}),
+    flow(
+      {node: r.body, type: "end"},
+      {node: r.nodeId, type: "end"})
+  ]
+);
+
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
+    "type": "ForInStatement",
+    "right": morphic.number("object"),
+    "body": morphic.number("body")
+  }
+).then(r => [
+    flow(
+      {node: r.nodeId, type: "start"},
+      {node: r.object, type: "start"}),
+    flow(
+      {node: r.object, type: "end"},
+      {node: r.nodeId, type: "end"}),
+    flow(
+      {node: r.object, type: "end"},
+      {node: r.body, type: "start"}),
+    flow(
+      {node: r.body, type: "end"},
+      {node: r.nodeId, type: "end"}),
+    flow(
+      {node: r.body, type: "end"},
+      {node: r.body, type: "start"})
+  ]
+);
+
 flowProgram.otherwise().then(
   (_1, _2, input) => {
-    console.log("no specific rules for ", input.type);
+    throw new Error("No specific rules for given " + input.type);
   }
 );
 
 module.exports = function controlFlow(nodeList) {
   return flatten(nodeList.map((element, id) => flowProgram(id, element)));
 }
-
-
-// END FLOW PROGRAM
-//
-// var start = Date.now();
-//
-// var tester = require("fs").readFileSync("components/Everything/test.js").toString().split(/===+/);
-//
-// console.log("read took " + (Date.now() - start));
-// start = Date.now();
-//
-// var ast = acorn.parse(tester[0]);
-//
-// console.log("AST gen took " + (Date.now() - start));
-// start = Date.now();
-//
-// var expected = tester[1].trim();
-//
-// generateLabels(ast);
-//
-// console.log("generating labels took " + (Date.now() - start));
-// start = Date.now();
-//
-// console.log("hoisting took " + (Date.now() - start));
-// start = Date.now();
-//
-// // console.log(ast);
-//
-// var flows = varFlows.concat(flowProgram(ast));
-//
-// console.log("flowing took " + (Date.now() - start));
-// start = Date.now();
-
-// var flows2 = flattenNodes.map((node, key) => {
-//   node.flows = flows.filter(flow => flow.end.node == key || flow.start.node == key);
-//   return node;
-// });
-
-// console.log(JSON.stringify(flows2, null, 2));
-
-// console.log(flows);
-
-
-//
-// function output(flows, parsed, id) {
-//   var toProcess = flows.filter(flow => flow.start == id);
-//   return toProcess
-//       .sort((a,b) => uuidToNode[b.end].node.start - uuidToNode[a.end].node.start)
-//       .reduce(
-//         (p,c) => (output(p.remaining, p.parsed, c.end)),
-//         {
-//           parsed: parsed.concat.apply(parsed, toProcess),
-//           remaining: flows.filter(a => toProcess.indexOf(a) == -1)
-//         });
-// }
-//
-// var walk = output(flows, [], ast.labels.start).parsed.map(
-//   flow => {
-//     var start = uuidToNode[flow.start];
-//     var end = uuidToNode[flow.end];
-//     return start.node.type + ":" + start.type + " -> " + end.node.type + ":" + end.type;
-//   }).join("\n");
-//
-// console.log("outputting took " + (Date.now() - start));
-// start = Date.now();
-//
-// if(expected != walk) {
-//   console.log("Got: ---");
-//   console.log(walk);
-//   console.log("Expected: ---");
-//   console.log(expected);
-// }
