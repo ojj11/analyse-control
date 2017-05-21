@@ -686,6 +686,6 @@ flowProgram.otherwise().then(
   }
 );
 
-module.exports = function controlFlow(nodeList) {
-  return flatten(nodeList.map((element, id) => flowProgram(id, element)));
-}
+module.exports = (nodeList) => (
+  nodeList.flatMap((element, id) => flowProgram(id, element))
+);

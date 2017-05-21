@@ -3,6 +3,12 @@ var assert = require("assert");
 var control = require("../basic_control.js");
 var List = require("immutable").List;
 
+var flowListToStrings = (flowList) => (
+  flowList.map(r =>
+    r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
+  )
+);
+
 describe("simple control flow analysis", function() {
 
   it("should output flow for simple Program node", function() {
@@ -15,14 +21,12 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(3, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+    assert.equal(3, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
 
   });
 
@@ -36,12 +40,10 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(1, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 0.end") != -1);
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 0.end"));
 
   });
 
@@ -55,14 +57,12 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(3, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+    assert.equal(3, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
 
   });
 
@@ -76,12 +76,10 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(1, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 0.end") != -1);
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 0.end"));
 
   });
 
@@ -95,13 +93,11 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(2, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 0.end") != -1);
+    assert.equal(2, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 0.end"));
 
   });
 
@@ -117,13 +113,11 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(2, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 0.end") != -1);
+    assert.equal(2, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 0.end"));
 
   });
 
@@ -139,13 +133,11 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(2, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 0.end") != -1);
+    assert.equal(2, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 0.end"));
 
   });
 
@@ -160,13 +152,11 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(2, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 0.end") != -1);
+    assert.equal(2, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 0.end"));
 
   });
 
@@ -181,13 +171,11 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(2, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 0.end") != -1);
+    assert.equal(2, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 0.end"));
 
   });
 
@@ -203,19 +191,17 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(4, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+    assert.equal(4, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
 
     // case where test is false:
-    assert.ok(stringRepresentation.indexOf("1.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("1.end -> 0.end"));
 
     // case where test is true:
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
 
   });
 
@@ -231,20 +217,18 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(5, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+    assert.equal(5, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
 
     // case where test is true:
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
 
     // case where test is false:
-    assert.ok(stringRepresentation.indexOf("1.end -> 3.start") != -1);
-    assert.ok(stringRepresentation.indexOf("3.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("1.end -> 3.start"));
+    assert.ok(stringRepresentation.includes("3.end -> 0.end"));
 
   });
 
@@ -257,12 +241,10 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(1, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 0.end") != -1);
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 0.end"));
 
   });
 
@@ -276,12 +258,10 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(1, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 0.end") != -1);
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 0.end"));
 
   });
 
@@ -296,12 +276,10 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(1, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 0.end") != -1);
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 0.end"));
 
   });
 
@@ -314,12 +292,10 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(1, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 0.end") != -1);
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 0.end"));
 
   });
 
@@ -332,12 +308,10 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(1, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 0.end") != -1);
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 0.end"));
 
   });
 
@@ -350,12 +324,10 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(1, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 0.end") != -1);
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 0.end"));
 
   });
 
@@ -368,12 +340,10 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(1, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 0.end") != -1);
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 0.end"));
 
   });
 
@@ -391,12 +361,10 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(1, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 0.end") != -1);
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 0.end"));
 
   });
 
@@ -414,12 +382,10 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(1, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 0.end") != -1);
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 0.end"));
 
   });
 
@@ -437,12 +403,10 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(1, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 0.end") != -1);
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 0.end"));
 
   });
 
@@ -457,15 +421,13 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(4, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 3.start") != -1);
-    assert.ok(stringRepresentation.indexOf("3.end -> 0.end") != -1);
+    assert.equal(4, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 3.start"));
+    assert.ok(stringRepresentation.includes("3.end -> 0.end"));
 
   });
 
@@ -480,15 +442,13 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(4, stringRepresentation.length);
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 3.start") != -1);
-    assert.ok(stringRepresentation.indexOf("3.end -> 0.end") != -1);
+    assert.equal(4, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 3.start"));
+    assert.ok(stringRepresentation.includes("3.end -> 0.end"));
 
   });
 
@@ -503,20 +463,18 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(4, stringRepresentation.length);
+    assert.equal(4, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
 
     // case where test is false:
-    assert.ok(stringRepresentation.indexOf("1.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("1.end -> 0.end"));
 
     // case where test is true:
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 1.start") != -1);
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 1.start"));
 
   });
 
@@ -531,20 +489,18 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(4, stringRepresentation.length);
+    assert.equal(4, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
 
     // case where test is false:
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
 
     // case where test is true:
-    assert.ok(stringRepresentation.indexOf("2.end -> 1.start") != -1);
+    assert.ok(stringRepresentation.includes("2.end -> 1.start"));
 
   });
 
@@ -559,15 +515,13 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(3, stringRepresentation.length);
+    assert.equal(3, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
 
   });
 
@@ -581,16 +535,14 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(4, stringRepresentation.length);
+    assert.equal(4, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 3.start") != -1);
-    assert.ok(stringRepresentation.indexOf("3.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 3.start"));
+    assert.ok(stringRepresentation.includes("3.end -> 0.end"));
 
   });
 
@@ -604,15 +556,13 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(3, stringRepresentation.length);
+    assert.equal(3, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
 
   });
 
@@ -631,14 +581,12 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(2, stringRepresentation.length);
+    assert.equal(2, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
 
   });
 
@@ -652,13 +600,11 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(1, stringRepresentation.length);
+    assert.equal(1, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
     // Throw statement is the end of this control flow
 
   });
@@ -673,13 +619,11 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(1, stringRepresentation.length);
+    assert.equal(1, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
     // Return statement is the end of this control flow
 
   });
@@ -694,11 +638,9 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(0, stringRepresentation.length);
+    assert.equal(0, stringRepresentation.size);
 
   });
 
@@ -713,20 +655,18 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(4, stringRepresentation.length);
+    assert.equal(4, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
 
     // case where first operand was enough to calculate result:
-    assert.ok(stringRepresentation.indexOf("1.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("1.end -> 0.end"));
 
     // case where second operand was needed:
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
   });
 
   it("should output flow for a SequenceExpression node", function() {
@@ -738,16 +678,14 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(4, stringRepresentation.length);
+    assert.equal(4, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 3.start") != -1);
-    assert.ok(stringRepresentation.indexOf("3.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 3.start"));
+    assert.ok(stringRepresentation.includes("3.end -> 0.end"));
   });
 
   it("should output flow for a LabeledStatement node", function() {
@@ -760,14 +698,12 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(2, stringRepresentation.length);
+    assert.equal(2, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 0.end"));
   });
 
   it("should output flow for a BinaryExpression node", function() {
@@ -781,15 +717,13 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(3, stringRepresentation.length);
+    assert.equal(3, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
   });
 
   it("should output flow for a AssignmentExpression node", function() {
@@ -803,14 +737,12 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(2, stringRepresentation.length);
+    assert.equal(2, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
   });
 
   it("should output flow for a ConditionalExpression node", function() {
@@ -824,21 +756,19 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(5, stringRepresentation.length);
+    assert.equal(5, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
 
     // case where test is true
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
 
     // case where test is false
-    assert.ok(stringRepresentation.indexOf("1.end -> 3.start") != -1);
-    assert.ok(stringRepresentation.indexOf("3.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("1.end -> 3.start"));
+    assert.ok(stringRepresentation.includes("3.end -> 0.end"));
   });
 
   it("should output flow for a computed MemberExpression node", function() {
@@ -852,15 +782,13 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(3, stringRepresentation.length);
+    assert.equal(3, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
   });
 
   it("should output flow for a non-computed MemberExpression node", function() {
@@ -874,14 +802,12 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(2, stringRepresentation.length);
+    assert.equal(2, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 0.end"));
   });
 
   it("should output flow for a SwitchStatement node", function() {
@@ -894,16 +820,14 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(4, stringRepresentation.length);
+    assert.equal(4, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 3.start") != -1);
-    assert.ok(stringRepresentation.indexOf("3.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 3.start"));
+    assert.ok(stringRepresentation.includes("3.end -> 0.end"));
   });
 
   it("should output flow for a TryStatement node with catch and final block", function() {
@@ -917,16 +841,14 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(4, stringRepresentation.length);
+    assert.equal(4, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 3.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 3.start") != -1);
-    assert.ok(stringRepresentation.indexOf("3.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 3.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 3.start"));
+    assert.ok(stringRepresentation.includes("3.end -> 0.end"));
   });
 
   it("should output flow for a TryStatement node with catch block", function() {
@@ -940,15 +862,13 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(3, stringRepresentation.length);
+    assert.equal(3, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 0.end") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 0.end"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
   });
 
   it("should output flow for a TryStatement node with final block", function() {
@@ -962,15 +882,13 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(3, stringRepresentation.length);
+    assert.equal(3, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 3.start") != -1);
-    assert.ok(stringRepresentation.indexOf("3.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 3.start"));
+    assert.ok(stringRepresentation.includes("3.end -> 0.end"));
   });
 
   it("should output flow for a ForStatement node", function() {
@@ -985,18 +903,16 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(6, stringRepresentation.length);
+    assert.equal(6, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 4.start") != -1);
-    assert.ok(stringRepresentation.indexOf("4.end -> 3.start") != -1);
-    assert.ok(stringRepresentation.indexOf("3.end -> 2.start") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
+    assert.ok(stringRepresentation.includes("2.end -> 4.start"));
+    assert.ok(stringRepresentation.includes("4.end -> 3.start"));
+    assert.ok(stringRepresentation.includes("3.end -> 2.start"));
   });
 
   it("should output flow for a ForStatement node without initialisation", function() {
@@ -1011,17 +927,15 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(5, stringRepresentation.length);
+    assert.equal(5, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 4.start") != -1);
-    assert.ok(stringRepresentation.indexOf("4.end -> 3.start") != -1);
-    assert.ok(stringRepresentation.indexOf("3.end -> 2.start") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
+    assert.ok(stringRepresentation.includes("2.end -> 4.start"));
+    assert.ok(stringRepresentation.includes("4.end -> 3.start"));
+    assert.ok(stringRepresentation.includes("3.end -> 2.start"));
   });
 
   it("should output flow for a ForStatement node without test", function() {
@@ -1036,16 +950,14 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(4, stringRepresentation.length);
+    assert.equal(4, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 4.start") != -1);
-    assert.ok(stringRepresentation.indexOf("4.end -> 3.start") != -1);
-    assert.ok(stringRepresentation.indexOf("3.end -> 4.start") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 4.start"));
+    assert.ok(stringRepresentation.includes("4.end -> 3.start"));
+    assert.ok(stringRepresentation.includes("3.end -> 4.start"));
   });
 
   it("should output flow for a ForStatement node without update", function() {
@@ -1060,17 +972,15 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(5, stringRepresentation.length);
+    assert.equal(5, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 4.start") != -1);
-    assert.ok(stringRepresentation.indexOf("4.end -> 2.start") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
+    assert.ok(stringRepresentation.includes("2.end -> 4.start"));
+    assert.ok(stringRepresentation.includes("4.end -> 2.start"));
   });
 
   it("should output flow for a ForStatement node without update and test", function() {
@@ -1085,15 +995,13 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(3, stringRepresentation.length);
+    assert.equal(3, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 4.start") != -1);
-    assert.ok(stringRepresentation.indexOf("4.end -> 4.start") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 4.start"));
+    assert.ok(stringRepresentation.includes("4.end -> 4.start"));
   });
 
   it("should output flow for a ForStatement node without update and initialisation", function() {
@@ -1108,16 +1016,14 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(4, stringRepresentation.length);
+    assert.equal(4, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 4.start") != -1);
-    assert.ok(stringRepresentation.indexOf("4.end -> 2.start") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
+    assert.ok(stringRepresentation.includes("2.end -> 4.start"));
+    assert.ok(stringRepresentation.includes("4.end -> 2.start"));
   });
 
   it("should output flow for a ForStatement node without initialisation and test", function() {
@@ -1132,15 +1038,13 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(3, stringRepresentation.length);
+    assert.equal(3, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 4.start") != -1);
-    assert.ok(stringRepresentation.indexOf("4.end -> 3.start") != -1);
-    assert.ok(stringRepresentation.indexOf("3.end -> 4.start") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 4.start"));
+    assert.ok(stringRepresentation.includes("4.end -> 3.start"));
+    assert.ok(stringRepresentation.includes("3.end -> 4.start"));
   });
 
   it("should output flow for a ForStatement node without initialisation, test and update", function() {
@@ -1155,14 +1059,12 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(2, stringRepresentation.length);
+    assert.equal(2, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 4.start") != -1);
-    assert.ok(stringRepresentation.indexOf("4.end -> 4.start") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 4.start"));
+    assert.ok(stringRepresentation.includes("4.end -> 4.start"));
   });
 
   it("should output flow for a SwitchCase node", function() {
@@ -1178,16 +1080,14 @@ describe("simple control flow analysis", function() {
         }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(4, stringRepresentation.length);
+    assert.equal(4, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 3.start") != -1);
-    assert.ok(stringRepresentation.indexOf("3.end -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 3.start"));
+    assert.ok(stringRepresentation.includes("3.end -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
   });
 
   it("should output flow for a CatchClause node", function() {
@@ -1203,14 +1103,12 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(2, stringRepresentation.length);
+    assert.equal(2, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.start") != -1);
-    assert.ok(stringRepresentation.indexOf("1.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.end -> 0.end"));
   });
 
   it("should output flow for a ForInStatement node", function() {
@@ -1224,17 +1122,39 @@ describe("simple control flow analysis", function() {
       }
     ]);
 
-    var stringRepresentation = control(nodeList).map(r =>
-      r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
-    );
+    var stringRepresentation = flowListToStrings(control(nodeList));
 
-    assert.equal(5, stringRepresentation.length);
+    assert.equal(5, stringRepresentation.size);
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 2.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 3.start") != -1);
-    assert.ok(stringRepresentation.indexOf("2.end -> 0.end") != -1);
-    assert.ok(stringRepresentation.indexOf("3.end -> 3.start") != -1);
-    assert.ok(stringRepresentation.indexOf("3.end -> 0.end") != -1);
+    assert.ok(stringRepresentation.includes("0.start -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 3.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
+    assert.ok(stringRepresentation.includes("3.end -> 3.start"));
+    assert.ok(stringRepresentation.includes("3.end -> 0.end"));
+  });
+
+  it("should output flows for multiple inputs", function() {
+    // nodeList for a ForInStatement node `for (x in y) {...}`
+    var nodeList = new List([
+      {
+        "type": "Program",
+        "body": [1]
+      },
+      {
+        "type": "BlockStatement",
+        "body": [2,3]
+      }
+    ]);
+
+    var stringRepresentation = flowListToStrings(control(nodeList));
+
+    assert.equal(5, stringRepresentation.size);
+
+    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
+    assert.ok(stringRepresentation.includes("1.start -> 2.start"));
+    assert.ok(stringRepresentation.includes("2.end -> 3.start"));
+    assert.ok(stringRepresentation.includes("3.end -> 1.end"));
+    assert.ok(stringRepresentation.includes("1.end -> 0.end"));
   });
 
   // ECMAScript6 node types are a WIP:
