@@ -51,6 +51,7 @@ enumerate.with(
       "DoWhileStatement",
       "ForStatement",
       "ForOfStatement",
+      "ForInStatement",
       "Program",
       "VariableDeclaration"
     ])
