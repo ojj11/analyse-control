@@ -1,6 +1,6 @@
 /* @flow */
 var assert = require("assert");
-var control = require("../complex_control.js");
+var control = require("../continue_break_control.js");
 var List = require("immutable").List;
 
 var flowListToStrings = (flowList) => (
@@ -1219,12 +1219,5 @@ describe("break/continue control flow analysis", function() {
     assert.ok(stringRepresentation.includes("10.start -> 1.end"));
 
   });
-
-  // it("should return flows for break in switch block");
-  //
-  // it("should return flows for return in function block");
-  // it("should return flows for throw in function block");
-  //
-  // it("should return flows for try block");
 
 });
