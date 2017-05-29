@@ -2,6 +2,7 @@
 var assert = require("assert");
 var control = require("../continue_break_control.js");
 var List = require("immutable").List;
+var Set = require("immutable").Set;
 
 var flowListToStrings = (flowList) => (
   flowList.map(r =>
@@ -15,7 +16,6 @@ var flowListToStrings = (flowList) => (
  *  - break from the last block
  *  - continue from a named block
  *  - break from a named block
- *  - exceptions being thrown in a TryStatement
  *  - Return statements in a function
  *  - Throw statements in a function
  */
@@ -1217,6 +1217,441 @@ describe("break/continue control flow analysis", function() {
     assert.ok(stringRepresentation.includes("4.start -> 1.end"));
     assert.ok(stringRepresentation.includes("7.start -> 1.end"));
     assert.ok(stringRepresentation.includes("10.start -> 1.end"));
+
+  });
+
+  it("should return flows for function return statement", function() {
+
+    var nodeList = new List([
+      // node 0:
+      {
+        "type": "Program",
+        "body": [
+          1
+        ]
+      },
+      // node 1:
+      {
+        "type": "FunctionDeclaration",
+        "id": 2,
+        "generator": false,
+        "expression": false,
+        "params": [],
+        "body": 3
+      },
+      // node 2:
+      {
+        "type": "Identifier",
+        "name": "abc"
+      },
+      // node 3:
+      {
+        "type": "BlockStatement",
+        "body": [
+          4
+        ]
+      },
+      // node 4:
+      {
+        "type": "ReturnStatement",
+        "argument": null
+      }
+    ]);
+
+    var stringRepresentation = flowListToStrings(control(nodeList));
+
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("4.start -> 3.end"));
+
+  });
+
+  it("should return flows for function return value statement", function() {
+
+    var nodeList = new List([
+      // node 0:
+      {
+        "type": "Program",
+        "body": [
+          1
+        ]
+      },
+      // node 1:
+      {
+        "type": "FunctionDeclaration",
+        "id": 2,
+        "generator": false,
+        "expression": false,
+        "params": [],
+        "body": 3
+      },
+      // node 2:
+      {
+        "type": "Identifier",
+        "name": "abc"
+      },
+      // node 3:
+      {
+        "type": "BlockStatement",
+        "body": [
+          4
+        ]
+      },
+      // node 4:
+      {
+        "type": "ReturnStatement",
+        "argument": 5
+      },
+      // node 5:
+      {
+        "type": "Literal",
+        "value": 5,
+        "raw": "5"
+      }
+    ]);
+
+    var stringRepresentation = flowListToStrings(control(nodeList));
+
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("5.end -> 3.end"));
+
+  });
+
+  it("should return flows for function throw statement", function() {
+
+    var nodeList = new List([
+      // node 0:
+      {
+        "type": "Program",
+        "body": [
+          1
+        ]
+      },
+      // node 1:
+      {
+        "type": "FunctionDeclaration",
+        "id": 2,
+        "generator": false,
+        "expression": false,
+        "params": [],
+        "body": 3
+      },
+      // node 2:
+      {
+        "type": "Identifier",
+        "name": "abc"
+      },
+      // node 3:
+      {
+        "type": "BlockStatement",
+        "body": [
+          4
+        ]
+      },
+      // node 4:
+      {
+        "type": "ThrowStatement",
+        "argument": 5
+      },
+      // node 5:
+      {
+        "type": "Literal",
+        "value": null,
+        "raw": "null"
+      }
+    ]);
+
+    var stringRepresentation = flowListToStrings(control(nodeList));
+
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("5.end -> 3.end"));
+
+  });
+
+  it("should return flows for program throw statement", function() {
+
+    var nodeList = new List([
+      // node 0:
+      {
+        "type": "Program",
+        "body": [
+          1
+        ]
+      },
+      // node 1:
+      {
+        "type": "BlockStatement",
+        "body": [
+          2
+        ]
+      },
+      // node 2:
+      {
+        "type": "ThrowStatement",
+        "argument": 3
+      },
+      // node 3:
+      {
+        "type": "Literal",
+        "value": null,
+        "raw": "null"
+      }
+    ]);
+
+    var stringRepresentation = flowListToStrings(control(nodeList));
+
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("3.end -> 0.end"));
+
+  });
+
+  it("should return flows for throw in try block with catch", function() {
+
+    var nodeList = new List([
+      // node 0:
+      {
+        "type": "Program",
+        "body": [
+          1
+        ]
+      },
+      // node 1:
+      {
+        "type": "TryStatement",
+        "block": 2,
+        "handler": 5,
+        "finalizer": null
+      },
+      // node 2:
+      {
+        "type": "BlockStatement",
+        "body": [
+          3
+        ]
+      },
+      // node 3:
+      {
+        "type": "ThrowStatement",
+        "argument": 4
+      },
+      // node 4:
+      {
+        "type": "Literal",
+        "value": null,
+        "raw": "null"
+      },
+      // node 5:
+      {
+        "type": "CatchClause",
+        "param": 6,
+        "body": 7
+      },
+      // node 6:
+      {
+        "type": "Identifier",
+        "name": "e"
+      },
+      // node 7:
+      {
+        "type": "BlockStatement",
+        "body": []
+      }
+    ]);
+
+    var stringRepresentation = flowListToStrings(control(nodeList));
+
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("4.end -> 5.start"));
+
+  });
+
+  it("should return flows for throw in try block with finalizer", function() {
+
+    var nodeList = new List([
+      // node 0:
+      {
+        "type": "Program",
+        "body": [
+          1
+        ]
+      },
+      // node 1:
+      {
+        "type": "TryStatement",
+        "block": 2,
+        "handler": null,
+        "finalizer": 5
+      },
+      // node 2:
+      {
+        "type": "BlockStatement",
+        "body": [
+          3
+        ]
+      },
+      // node 3:
+      {
+        "type": "ThrowStatement",
+        "argument": 4
+      },
+      // node 4:
+      {
+        "type": "Literal",
+        "value": null,
+        "raw": "null"
+      },
+      // node 5:
+      {
+        "type": "BlockStatement",
+        "body": []
+      }
+    ]);
+
+    var stringRepresentation = flowListToStrings(control(nodeList));
+
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("4.end -> 5.start"));
+
+  });
+
+  it("should return flows for throw in catch block", function() {
+
+    var nodeList = new List([
+      // node 0:
+      {
+        "type": "Program",
+        "body": [
+          1
+        ]
+      },
+      // node 1:
+      {
+        "type": "TryStatement",
+        "block": 2,
+        "handler": 3,
+        "finalizer": 8
+      },
+      // node 2:
+      {
+        "type": "BlockStatement",
+        "body": []
+      },
+      // node 3:
+      {
+        "type": "CatchClause",
+        "param": 4,
+        "body": 5
+      },
+      // node 4:
+      {
+        "type": "Identifier",
+        "name": "e"
+      },
+      // node 5:
+      {
+        "type": "BlockStatement",
+        "body": [
+          6
+        ]
+      },
+      // node 6:
+      {
+        "type": "ThrowStatement",
+        "argument": 7
+      },
+      // node 7:
+      {
+        "type": "Literal",
+        "value": null,
+        "raw": "null"
+      },
+      // node 8:
+      {
+        "type": "BlockStatement",
+        "body": []
+      }
+    ]);
+
+    var stringRepresentation = flowListToStrings(control(nodeList));
+
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("7.end -> 8.start"));
+
+  });
+
+  it("shouldn't generate flows in and out of functions", function() {
+    var nodeList = new List([
+      // node 0:
+      {
+        "type": "Program",
+        "body": [
+          1
+        ]
+      },
+      // node 1:
+      {
+        "type": "TryStatement",
+        "block": 2,
+        "handler": null,
+        "finalizer": 8
+      },
+      // node 2:
+      {
+        "type": "BlockStatement",
+        "body": [
+          3
+        ]
+      },
+      // node 3:
+      {
+        "type": "FunctionDeclaration",
+        "id": 4,
+        "generator": false,
+        "expression": false,
+        "params": [],
+        "body": 5
+      },
+      // node 4:
+      {
+        "type": "Identifier",
+        "name": "abc"
+      },
+      // node 5:
+      {
+        "type": "BlockStatement",
+        "body": [
+          6
+        ]
+      },
+      // node 6:
+      {
+        "type": "ThrowStatement",
+        "argument": 7
+      },
+      // node 7:
+      {
+        "type": "Literal",
+        "value": null,
+        "raw": "null"
+      },
+      // node 8:
+      {
+        "type": "BlockStatement",
+        "body": []
+      }
+    ]);
+
+    var flows = control(nodeList);
+
+    // check that [0,1,2,3,8] never overlap with [5,6,7]
+    var set1 = new Set([0,1,2,3,8]);
+    assert.ok(flows.every(f => (
+      set1.includes(f.start.node) == set1.includes(f.end.node)
+    )));
+
+    var set2 = new Set([5,6,7]);
+    assert.ok(flows.every(f => (
+      set2.includes(f.start.node) == set2.includes(f.end.node)
+    )));
 
   });
 

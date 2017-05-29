@@ -241,15 +241,11 @@ generateFlows.with(
   morphic.Object("state"),
   morphic.number("nodeId"),
   {
-    "type": either([
-      "Program",
-      "FunctionDeclaration",
-      "FunctionExpression"
-    ]),
-    "body": matchArray("body")
+    "type": "SwitchCase",
+    "consequent": matchArray("consequent")
   }
 ).then((r) => (
-  dispatch(r.list, r.state, r.body)
+  dispatch(r.list, r.state, r.consequent)
 ));
 
 generateFlows.with(
@@ -257,11 +253,63 @@ generateFlows.with(
   morphic.Object("state"),
   morphic.number("nodeId"),
   {
-    "type": "SwitchCase",
-    "consequent": matchArray("consequent")
+    "type": "TryStatement",
+    "block": morphic.number("block"),
+    "handler": morphic.number("handler"),
+    "finalizer": null
   }
 ).then((r) => (
-  dispatch(r.list, r.state, r.consequent)
+  dispatch(r.list, r.state.unshift(new Map({
+    "exception": {node: r.handler, type: "start"}
+  })), r.block).concat(dispatch(r.list, r.state, r.handler))
+));
+
+generateFlows.with(
+  morphic.Object("list"),
+  morphic.Object("state"),
+  morphic.number("nodeId"),
+  {
+    "type": "TryStatement",
+    "block": morphic.number("block"),
+    "handler": null,
+    "finalizer": morphic.number("finalizer")
+  }
+).then((r) => (
+  dispatch(r.list, r.state.unshift(new Map({
+    "exception": {node: r.finalizer, type: "start"}
+  })), r.block).concat(dispatch(r.list, r.state, r.finalizer))
+));
+
+generateFlows.with(
+  morphic.Object("list"),
+  morphic.Object("state"),
+  morphic.number("nodeId"),
+  {
+    "type": "TryStatement",
+    "block": morphic.number("block"),
+    "handler": morphic.number("handler"),
+    "finalizer": morphic.number("finalizer")
+  }
+).then((r) => (
+  dispatch(r.list, r.state.unshift(new Map({
+    "exception": {node: r.handler, type: "start"}
+  })), r.block).concat(
+    dispatch(r.list, r.state.unshift(new Map({
+      "exception": {node: r.finalizer, type: "start"}
+    })), r.handler)
+  ).concat(dispatch(r.list, r.state, r.finalizer))
+));
+
+generateFlows.with(
+  morphic.Object("list"),
+  morphic.Object("state"),
+  morphic.number("nodeId"),
+  {
+    "type": "CatchClause",
+    "body": morphic.number("body")
+  }
+).then((r) => (
+  dispatch(r.list, r.state, r.body)
 ));
 
 // things that cause the control to flow back to one of the statements coded
@@ -341,23 +389,88 @@ generateFlows.with(
   ]
 });
 
+generateFlows.with(
+  morphic.Object("list"),
+  morphic.Object("state"),
+  morphic.number("nodeId"),
+  {
+    "type": "ReturnStatement",
+    "argument": null
+  }
+).then((r) => (
+  [
+    flow(
+      {node: r.nodeId, type: "start"},
+      r.state.find((element) => (element.has("return"))).get("return"))
+  ]
+));
+
+generateFlows.with(
+  morphic.Object("list"),
+  morphic.Object("state"),
+  morphic.number("nodeId"),
+  {
+    "type": "ReturnStatement",
+    "argument": morphic.number("argument")
+  }
+).then((r) => (
+  [
+    flow(
+      {node: r.argument, type: "end"},
+      r.state.find((element) => (element.has("return"))).get("return"))
+  ]
+));
+
+generateFlows.with(
+  morphic.Object("list"),
+  morphic.Object("state"),
+  morphic.number("nodeId"),
+  {
+    "type": "ThrowStatement",
+    "argument": morphic.number("argument")
+  }
+).then((r) => (
+  [
+    flow(
+      {node: r.argument, type: "end"},
+      r.state.find((element) => (element.has("exception"))).get("exception"))
+  ]
+));
+
 generateFlows.otherwise().return([]);
+
+/**
+ * Gets the node id to return/throw to - this is different depending on whether
+ * the node being analysed is a function or a program node
+ */
+function getTopLevelEndNodeId(node) {
+  if (node[1].type == "Program") {
+    return node[0];
+  } else {
+    return node[1].body;
+  }
+}
 
 module.exports = (list) => (
   // get list as [index, value] pairs
-  list.entrySeq().filter((element) => (
-    // we want to process all top level elements seperately (ie a break in a
+  list.entrySeq().filter((node) => (
+    // we want to process all top level nodes seperately (ie a break in a
     // loop in a function, should not break to the loop that the function is
     // contained in (not that functions should be defined in loop statements))
-    element[1].type == "Program" ||
-      element[1].type == "FunctionDeclaration" ||
-      element[1].type == "FunctionExpression"
-  )).flatMap((element) => (
+    node[1].type == "Program" ||
+      node[1].type == "FunctionDeclaration" ||
+      node[1].type == "FunctionExpression" ||
+      node[1].type == "ArrowFunctionExpression"
+  )).flatMap((node) => (
     // dispatch our control flow program over the node indexes left
     dispatch(
       list,
-      new List([]),
-      element[0]
+      new List([
+        new Map({
+          "exception": {"node": getTopLevelEndNodeId(node), "type": "end"},
+          "return": {"node": getTopLevelEndNodeId(node), "type": "end"}
+        })]),
+      node[1].body
     )
   )).toList()
 )

@@ -2,6 +2,7 @@
 var assert = require("assert");
 var control = require("../basic_control.js");
 var List = require("immutable").List;
+var Set = require("immutable").Set;
 
 var flowListToStrings = (flowList) => (
   flowList.map(r =>
@@ -1132,7 +1133,6 @@ describe("simple control flow analysis", function() {
   });
 
   it("should output flows for multiple inputs", function() {
-    // nodeList for a ForInStatement node `for (x in y) {...}`
     var nodeList = new List([
       {
         "type": "Program",
@@ -1153,6 +1153,58 @@ describe("simple control flow analysis", function() {
     assert.ok(stringRepresentation.includes("2.end -> 3.start"));
     assert.ok(stringRepresentation.includes("3.end -> 1.end"));
     assert.ok(stringRepresentation.includes("1.end -> 0.end"));
+  });
+
+  it("shouldn't generate flows in and out of functions", function() {
+    var nodeList = new List([
+      // node 0:
+      {
+        "type": "Program",
+        "body": [
+          1
+        ]
+      },
+      // node 1:
+      {
+        "type": "FunctionDeclaration",
+        "id": 2,
+        "generator": false,
+        "expression": false,
+        "params": [],
+        "body": 3
+      },
+      // node 2:
+      {
+        "type": "Identifier",
+        "name": "abc"
+      },
+      // node 3:
+      {
+        "type": "BlockStatement",
+        "body": [
+          4
+        ]
+      },
+      // node 4:
+      {
+        "type": "ReturnStatement",
+        "argument": null
+      }
+    ]);
+
+    var flows = control(nodeList);
+
+    // check that [0,1] never overlap with [3,4]
+    var set1 = new Set([0,1]);
+    assert.ok(flows.every(f => (
+      set1.includes(f.start.node) == set1.includes(f.end.node)
+    )));
+
+    var set2 = new Set([3,4]);
+    assert.ok(flows.every(f => (
+      set2.includes(f.start.node) == set2.includes(f.end.node)
+    )));
+
   });
 
   // ECMAScript6 node types are a WIP:
