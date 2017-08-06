@@ -40,8 +40,8 @@ describe("hoisting", function() {
       r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
     );
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 2.hoist") != -1);
-    assert.ok(stringRepresentation.indexOf("2.hoist -> 0.endHoist") != -1);
+    assert.ok(stringRepresentation.indexOf("0.startHoist -> 2.hoist") != -1);
+    assert.ok(stringRepresentation.indexOf("2.hoist -> 0.start") != -1);
   });
 
   it("should hoist a var declaration in an if block", function() {
@@ -94,8 +94,8 @@ describe("hoisting", function() {
       r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
     );
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 5.hoist") != -1);
-    assert.ok(stringRepresentation.indexOf("5.hoist -> 0.endHoist") != -1);
+    assert.ok(stringRepresentation.indexOf("0.startHoist -> 5.hoist") != -1);
+    assert.ok(stringRepresentation.indexOf("5.hoist -> 0.start") != -1);
   });
 
   it("should hoist a simple function declaration", function() {
@@ -131,8 +131,8 @@ describe("hoisting", function() {
       r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
     );
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.hoist") != -1);
-    assert.ok(stringRepresentation.indexOf("1.hoist -> 0.endHoist") != -1);
+    assert.ok(stringRepresentation.indexOf("0.startHoist -> 1.hoist") != -1);
+    assert.ok(stringRepresentation.indexOf("1.hoist -> 0.start") != -1);
   });
 
   it("should hoist a simple function declaration in an if block", function() {
@@ -182,8 +182,8 @@ describe("hoisting", function() {
       r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
     );
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 4.hoist") != -1);
-    assert.ok(stringRepresentation.indexOf("4.hoist -> 0.endHoist") != -1);
+    assert.ok(stringRepresentation.indexOf("0.startHoist -> 4.hoist") != -1);
+    assert.ok(stringRepresentation.indexOf("4.hoist -> 0.start") != -1);
   });
 
   it("should hoist in order", function() {
@@ -240,9 +240,9 @@ describe("hoisting", function() {
       r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
     );
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 2.hoist") != -1);
+    assert.ok(stringRepresentation.indexOf("0.startHoist -> 2.hoist") != -1);
     assert.ok(stringRepresentation.indexOf("2.hoist -> 6.hoist") != -1);
-    assert.ok(stringRepresentation.indexOf("6.hoist -> 0.endHoist") != -1);
+    assert.ok(stringRepresentation.indexOf("6.hoist -> 0.start") != -1);
   });
 
   it("shouldn't hoist when there's no function or variable declaration", function() {
@@ -289,7 +289,7 @@ describe("hoisting", function() {
       r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
     );
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 0.endHoist") != -1);
+    assert.ok(stringRepresentation.indexOf("0.startHoist -> 0.start") != -1);
   });
 
   it("shouldn't hoist a var in a function body", function() {
@@ -343,8 +343,8 @@ describe("hoisting", function() {
       r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
     );
 
-    assert.ok(stringRepresentation.indexOf("0.start -> 1.hoist") != -1);
-    assert.ok(stringRepresentation.indexOf("1.hoist -> 0.endHoist") != -1);
+    assert.ok(stringRepresentation.indexOf("0.startHoist -> 1.hoist") != -1);
+    assert.ok(stringRepresentation.indexOf("1.hoist -> 0.start") != -1);
   });
 
 });

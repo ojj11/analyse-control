@@ -84,13 +84,15 @@ flowProgram.with(
 );
 
 // this is the end of the flow for these statements, we revisit these in
-// complex_control.js
+// complex_control.js and switch_control.js
 flowProgram.with(
   morphic.number("nodeId"),
   {
     "type": either([
       "BreakStatement",
-      "ContinueStatement"
+      "ContinueStatement",
+      "SwitchCase",
+      "SwitchStatement"
     ])
   }
 ).return([]);
@@ -341,24 +343,6 @@ flowProgram.with(
   flow({node: r.left, type: "end"}, {node: r.right, type: "start"}),
   flow({node: r.right, type: "end"}, {node: r.nodeId, type: "end"})
 ]);
-
-flowProgram.with(
-  morphic.number("nodeId"),
-  {
-    "type": "SwitchStatement",
-    "discriminant": morphic.number("discriminant"),
-    "cases": matchArray("cases")
-  }
-).then(
-  r => generateFlowsThroughArrayWithStartAndEnd({
-    "array": r.cases,
-    "startNode": {node: r.discriminant, type: "end"},
-    "endNode": {node: r.nodeId, type: "end"}
-  }).concat(
-    flow(
-      {node: r.nodeId, type: "start"},
-      {node: r.discriminant, type: "start"}))
-);
 
 flowProgram.with(
   morphic.number("nodeId"),
@@ -617,24 +601,6 @@ flowProgram.with(
       {node: r.body, type: "end"},
       {node: r.body, type: "start"})
   ]
-);
-
-flowProgram.with(
-  morphic.number("nodeId"),
-  {
-    "type": "SwitchCase",
-    "test": morphic.number("test"),
-    "consequent": matchArray("consequents")
-  }
-).then(
-  r => generateFlowsThroughArrayWithStartAndEnd({
-    "array": r.consequents,
-    "startNode": {node: r.test, type: "end"},
-    "endNode": {node: r.nodeId, type: "end"}
-  }).concat(
-    flow(
-      {node: r.nodeId, type: "start"},
-      {node: r.test, type: "start"}))
 );
 
 flowProgram.with(

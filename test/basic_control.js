@@ -809,26 +809,6 @@ describe("simple control flow analysis", function() {
     assert.ok(stringRepresentation.includes("1.end -> 0.end"));
   });
 
-  it("should output flow for a SwitchStatement node", function() {
-    // nodeList for an SwitchStatement `switch(x) {case 1: break; case 2: break; default: break;}`
-    var nodeList = new List([
-      {
-        "type": "SwitchStatement",
-        "discriminant": 1,
-        "cases": [2,3]
-      }
-    ]);
-
-    var stringRepresentation = flowListToStrings(control(nodeList));
-
-    assert.equal(4, stringRepresentation.size);
-
-    assert.ok(stringRepresentation.includes("0.start -> 1.start"));
-    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
-    assert.ok(stringRepresentation.includes("2.end -> 3.start"));
-    assert.ok(stringRepresentation.includes("3.end -> 0.end"));
-  });
-
   it("should output flow for a TryStatement node with catch and final block", function() {
     // nodeList for an TryStatement `try {} catch(e) {} finally {}`
     var nodeList = new List([
@@ -1064,29 +1044,6 @@ describe("simple control flow analysis", function() {
 
     assert.ok(stringRepresentation.includes("0.start -> 4.start"));
     assert.ok(stringRepresentation.includes("4.end -> 4.start"));
-  });
-
-  it("should output flow for a SwitchCase node", function() {
-    // nodeList for a SwitchCase node `case true: ...;`
-    var nodeList = new List([
-      {
-          "type": "SwitchCase",
-          "consequent": [
-            1,
-            2
-          ],
-          "test": 3
-        }
-    ]);
-
-    var stringRepresentation = flowListToStrings(control(nodeList));
-
-    assert.equal(4, stringRepresentation.size);
-
-    assert.ok(stringRepresentation.includes("0.start -> 3.start"));
-    assert.ok(stringRepresentation.includes("3.end -> 1.start"));
-    assert.ok(stringRepresentation.includes("1.end -> 2.start"));
-    assert.ok(stringRepresentation.includes("2.end -> 0.end"));
   });
 
   it("should output flow for a CatchClause node", function() {

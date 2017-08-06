@@ -83,7 +83,7 @@ module.exports = function hoist(nodeList) {
 
   var end = {
     node: 0,
-    type: "start"
+    type: "startHoist"
   };
 
   declarations.forEach(declaration => {
@@ -94,7 +94,7 @@ module.exports = function hoist(nodeList) {
 
   flows.push(hoistNode(end, {
     node: 0,
-    type: "endHoist"
+    type: "start"
   }));
 
   return flows;
