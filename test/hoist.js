@@ -1,4 +1,3 @@
-/* @flow */
 var assert = require("assert");
 var hoist = require("../hoist.js");
 var List = require("immutable").List;
@@ -40,7 +39,7 @@ describe("hoisting", function() {
       r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
     );
 
-    assert.ok(stringRepresentation.indexOf("0.startHoist -> 2.hoist") != -1);
+    assert.ok(stringRepresentation.indexOf("0.hoist -> 2.hoist") != -1);
     assert.ok(stringRepresentation.indexOf("2.hoist -> 0.start") != -1);
   });
 
@@ -94,7 +93,7 @@ describe("hoisting", function() {
       r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
     );
 
-    assert.ok(stringRepresentation.indexOf("0.startHoist -> 5.hoist") != -1);
+    assert.ok(stringRepresentation.indexOf("0.hoist -> 5.hoist") != -1);
     assert.ok(stringRepresentation.indexOf("5.hoist -> 0.start") != -1);
   });
 
@@ -131,7 +130,7 @@ describe("hoisting", function() {
       r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
     );
 
-    assert.ok(stringRepresentation.indexOf("0.startHoist -> 1.hoist") != -1);
+    assert.ok(stringRepresentation.indexOf("0.hoist -> 1.hoist") != -1);
     assert.ok(stringRepresentation.indexOf("1.hoist -> 0.start") != -1);
   });
 
@@ -182,7 +181,7 @@ describe("hoisting", function() {
       r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
     );
 
-    assert.ok(stringRepresentation.indexOf("0.startHoist -> 4.hoist") != -1);
+    assert.ok(stringRepresentation.indexOf("0.hoist -> 4.hoist") != -1);
     assert.ok(stringRepresentation.indexOf("4.hoist -> 0.start") != -1);
   });
 
@@ -240,7 +239,7 @@ describe("hoisting", function() {
       r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
     );
 
-    assert.ok(stringRepresentation.indexOf("0.startHoist -> 2.hoist") != -1);
+    assert.ok(stringRepresentation.indexOf("0.hoist -> 2.hoist") != -1);
     assert.ok(stringRepresentation.indexOf("2.hoist -> 6.hoist") != -1);
     assert.ok(stringRepresentation.indexOf("6.hoist -> 0.start") != -1);
   });
@@ -289,7 +288,7 @@ describe("hoisting", function() {
       r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
     );
 
-    assert.ok(stringRepresentation.indexOf("0.startHoist -> 0.start") != -1);
+    assert.ok(stringRepresentation.indexOf("0.hoist -> 0.start") != -1);
   });
 
   it("shouldn't hoist a var in a function body", function() {
@@ -343,7 +342,7 @@ describe("hoisting", function() {
       r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
     );
 
-    assert.ok(stringRepresentation.indexOf("0.startHoist -> 1.hoist") != -1);
+    assert.ok(stringRepresentation.indexOf("0.hoist -> 1.hoist") != -1);
     assert.ok(stringRepresentation.indexOf("1.hoist -> 0.start") != -1);
   });
 

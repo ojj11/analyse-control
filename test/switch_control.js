@@ -1,4 +1,3 @@
-/* @flow */
 var assert = require("assert");
 var switchControl = require("../switch_control.js");
 var List = require("immutable").List;

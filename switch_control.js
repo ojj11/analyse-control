@@ -6,7 +6,7 @@ var List = require("immutable").List;
 var Map = require("immutable").Map;
 
 /**
- * generateFlows is the method that actually generates the flows for a specific
+ * flowProgram is the method that actually generates the flows for a specific
  * node. This code handles flows specific to switch statements:
  */
 var flowProgram = new morphic();

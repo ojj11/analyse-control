@@ -1,5 +1,3 @@
-// @flow
-
 var morphic = require("morphic");
 var either = require("./matchers.js").either;
 var matchArray = require("./matchers.js").matchArray;
@@ -83,7 +81,7 @@ module.exports = function hoist(nodeList) {
 
   var end = {
     node: 0,
-    type: "startHoist"
+    type: "hoist"
   };
 
   declarations.forEach(declaration => {

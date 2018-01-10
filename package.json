@@ -1,16 +1,16 @@
 {
   "name": "analyse-control",
   "version": "1.0.0",
-  "description": "a control flow analyser for JavaScript",
+  "description": "a basic control flow analyser for JavaScript",
   "main": "lib.js",
   "dependencies": {
-    "acorn": "^3.3.0",
-    "chalk": "^2.0.1",
-    "discontinuous-range": "^1.0.0",
     "immutable": "^3.8.1",
     "morphic": "^1.0.5"
   },
   "devDependencies": {
+    "acorn": "^3.3.0",
+    "chalk": "^2.0.1",
+    "discontinuous-range": "^1.0.0",
     "mocha": "^3.2.0"
   },
   "scripts": {
@@ -21,7 +21,7 @@
     "analyser"
   ],
   "bin": {
-    "visualise": "./visualise.js"
+    "visualise-control": "./visualise.js"
   },
   "author": "Olli Jones",
   "license": "MIT",

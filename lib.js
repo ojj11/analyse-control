@@ -25,11 +25,26 @@ Flow.prototype.getNode = function() {
 }
 
 /**
- * Gets the type of incoming edge that came into this node, either "hoist" when
- * variable hoisting, or "flow" when an actual execution path
+ * Gets a unique identifier for this flow, this will be an integer for quick
+ * comparison where the number of AST nodes is small enough
  */
-Flow.prototype.getFlowType = function() {
-  return this.type;
+Flow.prototype.getId = function() {
+  if (this.node.node > ((Number.MAX_SAFE_INTEGER - 2) / 3) - 1) {
+    return this.node.node + "." + this.node.type;
+  }
+  var id = 3 * (this.node.node + 1);
+  switch(this.node.type) {
+    case "start":
+      id += 0;
+      break;
+    case "end":
+      id += 1;
+      break;
+    case "hoist":
+      id += 2;
+      break;
+  }
+  return id;
 }
 
 /**
@@ -37,15 +52,33 @@ Flow.prototype.getFlowType = function() {
  * > { statement1; }
  * We would first enter the BlockStatement, then enter statement1, then exit
  * statement1, then exit the BlockStatement. So we would visit both nodes twice
- * once in the entrance capacity and once in their exit capacity.
- * Will be either "enter" or "exit"
+ * once in their entrance capacity and once in their exit capacity.
  */
 Flow.prototype.isEnter = function() {
   return this.node.type == "start"
 }
 
+/**
+ * Gets whether we are exiting this node. For example:
+ * > { statement1; }
+ * We would first enter the BlockStatement, then enter statement1, then exit
+ * statement1, then exit the BlockStatement. So we would visit both nodes twice
+ * once in their entrance capacity and once in their exit capacity.
+ */
 Flow.prototype.isExit = function() {
   return this.node.type == "end"
+}
+
+/**
+ * Gets whether we are hoisting this node. For example:
+ * > { var x; statement1; }
+ * We would first hoist the variable declaration for "x", then we would enter
+ * the BlockStatement, then enter the variable declaration, etc
+ * There's more on this here: https://www.w3schools.com/js/js_hoisting.asp
+ * Note that this implements Chrome/IE/Safari hoisting, not Firefox
+ */
+Flow.prototype.isHoist = function() {
+  return this.node.type == "hoist"
 }
 
 /**
@@ -59,7 +92,7 @@ Flow.prototype.getBackwardsFlows = function() {
     return this.node.type == value.end.type && this.node.node == value.end.node;
   }).map((flow) => {
     return new Flow(this.nodeList, this.flows, flow.start, flow.type)
-  });
+  }).toJS();
 }
 
 /**
@@ -73,7 +106,7 @@ Flow.prototype.getForwardFlows = function() {
     return this.node.type == value.start.type && this.node.node == value.start.node;
   }).map((flow) => {
     return new Flow(this.nodeList, this.flows, flow.end, flow.type)
-  });
+  }).toJS();
 }
 
 /**
@@ -96,10 +129,10 @@ module.exports = function(ast) {
 
   return {
     getStartOfFlow: () => (new Flow(
-      out, flows, {node: 0, type: "startHoist"}, "terminal"
+      out, flows, {node: 0, type: "hoist"}, "hoist"
     )),
     getEndOfFlow: () => (new Flow(
-      out, flows, {node: 0, type: "end"}, "terminal"
+      out, flows, {node: 0, type: "end"}, "end"
     )),
     getNode: (node) => (out.get(node)),
   }

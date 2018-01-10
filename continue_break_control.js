@@ -1,5 +1,3 @@
-// @flow
-
 var morphic = require("morphic");
 var either = require("./matchers.js").either;
 var matchArray = require("./matchers.js").matchArray;

@@ -1,4 +1,3 @@
-/* @flow */
 var assert = require("assert");
 var control = require("../continue_break_control.js");
 var List = require("immutable").List;

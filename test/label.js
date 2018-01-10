@@ -1,4 +1,3 @@
-/* @flow */
 var assert = require("assert");
 var label = require("../label.js");
 
