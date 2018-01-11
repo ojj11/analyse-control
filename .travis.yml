@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+- '7'
+- '6'
+- '5'
+deploy:
+  provider: npm
+  email: ojj11@users.noreply.github.com
+  api_key:
+    secure: Tjh5VPOCOUXjt7E8FEZDZFMWhySiWOLmqsqqGz4rDRAQ9KLB3pJT22XuQpyWEz/7SJES/uAPNYmyxGyq1lj1f3SaQTq2qUStqb+sM4WCl0m4rRb6EmRNMJRdN1EF0gan2fuqJdA2cg3KrhJE0O2lU9c4LL1H/iaTMiuuK9mtGvMIgrFu47Q+tMGSabQPMkHYH3aUwmoawcQqicZC60N+IT+oldXIjvHVT0SzfbIqHZpEqgLuRfjTDn/6PVvdyT6rWZl5veoOWeYS8x9rQm1DctczHeK3o4so/UPv80ZSLAzAe2NxvQ+PWCrAp2IZJzKIEgrq8q8KCuWmQbJM2aHMF4Sf0yxqrQMi/I0E6+YU0XW8/2P5mGXd9uaO+r/wuQheO+FW0j58rMiyr5h828m5m+T6UBnXRbIcU3754OTNj4MDOu9UhcSY8xDzPWHPrW0wU9FcuxYRiHLL8nWLsf+s8z+GWft/4bHRuaA3QHIAL1shLWYE1QNWDEDjNNUlRWCKDypmdvyvQSRL6T33iqhLBp8ATSXAkWTQvnMRgk2y+74R+/0CRb6G+b+daroLddFuGEPvSfDLnx/sAhSzIOjHcIamIG6nKdlRmn8gjWIvcTFf7moSIrGMG4R5vDCEuMUQbo9VQ6gkb6ORBBshPJRgHATXqefuA4VW981h7AKaUCQ=
+  on:
+    tags: true
+    repo: ojj11/analyse-control
