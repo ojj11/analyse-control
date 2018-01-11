@@ -106,12 +106,12 @@ while(flow != undefined) {
 }
 ```
 
-Notice that `getForwardFlows()` returns an array. This is because at any point
-the flow could fork, when encountering an `IfStatement`, `WhileStatement`, or
-similar conditional expression; both possible control flow progressions are
-returned. Similarly, the control flow could also terminate (in non-looping
-programs) through the use of a `ThrowStatement` or the program naturally coming
-to the end of the script, then the array will be empty.
+Notice that `getForwardFlows()` returns an array. This is because:
+ - When encountering a fork in the control flow graph, ie. an `IfStatement`,
+    `WhileStatement`, or similar conditional expression: both possible control
+    flow progressions are returned.
+ - The control flow could also terminate (in non-looping programs) through the
+    use of a `ThrowStatement` or the program naturally coming to the end of the script: then the array will be empty.
 
 The example code below shows how this functionality can be used to calculate
 the unique number of possible execution paths through a branching algorithm:
@@ -145,6 +145,8 @@ function countBranches(node, visited) {
     // we've reached the termination of this single control flow
     return 1;
   }
+  // we can count the number of execution paths, by adding up the
+  // counts from recursively exploring all branches from this node:
   return outgoing.reduce((counter, node) => (
     counter + countBranches(node, visited.concat(nodeId))
   ), 0);
@@ -157,13 +159,14 @@ console.log(
 // prints "There are 2 possible paths through the code"
 ```
 
-Adding an additional `IfStatement` should correctly return "4 possible paths".
-Similarly adding a `WhileStatement` will return "Infinity possible paths" (
-because the loop has infinite variations on how many times it will execute).
+Appending an additional `IfStatement` should correctly return "4 possible
+paths". Similarly adding a `WhileStatement` will return "Infinity possible
+paths" (because the loop has infinite variations on how many times it will
+execute).
 
 ## API documentation
 
-### `analyse(ast: AST): Graph`
+### `analyse(ast: AST) : Graph`
 
 `require('analyse-control')` returns a method that when given an AST (abstract
 syntax tree) from a parser like [acorn](https://www.npmjs.com/package/acorn) it
@@ -281,6 +284,10 @@ method recursively to obtain a copy of the original AST.
 
     npm install
     npm test
+
+## Running visualiser
+
+![Image of visualisation tool](docs/flow_animation.gif)
 
 ## Known issues
 
