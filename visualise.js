@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var acorn = require("acorn");
 var fs = require("fs");
 var immutable = require("immutable");

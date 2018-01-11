@@ -280,14 +280,16 @@ This will return a representation similar to a node in the input AST, however,
 it will have had all inner ASTNodes replaced by numerical placeholders. Use the
 method recursively to obtain a copy of the original AST.
 
-## Running tests
+## Installing dependencies and running tests
 
-    npm install
-    npm test
+    npm it
 
 ## Running visualiser
 
 ![Image of visualisation tool](docs/flow_animation.gif)
+
+> Use `npx analyse-control ./path/to/script.js` to see a visualisation of the
+  control flow graph of a given script
 
 ## Known issues
 
