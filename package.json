@@ -1,14 +1,14 @@
 {
   "name": "analyse-control",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a basic control flow analyser for JavaScript",
   "main": "lib.js",
   "dependencies": {
     "immutable": "^3.8.1",
-    "morphic": "^1.0.5"
+    "morphic": "^1.0.5",
+    "acorn": "^5.3.0"
   },
   "devDependencies": {
-    "acorn": "^5.3.0",
     "mocha": "^4.1.0"
   },
   "scripts": {
