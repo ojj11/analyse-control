@@ -3,6 +3,7 @@ node_js:
 - '7'
 - '6'
 - '5'
+- '10'
 deploy:
   provider: npm
   email: ojj11@users.noreply.github.com
