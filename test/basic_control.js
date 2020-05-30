@@ -179,6 +179,23 @@ describe("simple control flow analysis", function() {
 
   });
 
+  it("should output flow for a VariableDeclarator node with no initialiser", function() {
+
+    // nodeList for an expression statement like `var x;`
+    var nodeList = new List([
+      {
+        "type": "VariableDeclarator",
+        "id": 2
+      }
+    ]);
+
+    var stringRepresentation = flowListToStrings(control(nodeList));
+
+    assert.equal(1, stringRepresentation.size);
+    assert.ok(stringRepresentation.includes("0.start -> 0.end"));
+
+  });
+
   it("should output flow for an IfStatement node without alternative", function() {
 
     // nodeList for an expression statement like `if (true) {}`

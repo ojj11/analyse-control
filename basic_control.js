@@ -185,6 +185,18 @@ flowProgram.with(
 flowProgram.with(
   morphic.number("nodeId"),
   {
+    "type": "VariableDeclarator",
+    "init": null
+  }
+).then(
+  r => [
+    flow({node: r.nodeId, type: "start"}, {node: r.nodeId, type: "end"})
+  ]
+);
+
+flowProgram.with(
+  morphic.number("nodeId"),
+  {
     "type": either([
       "IfStatement",
       "ConditionalExpression"
@@ -645,7 +657,9 @@ flowProgram.with(
 
 flowProgram.otherwise().then(
   (_1, _2, input) => {
-    throw new Error("No specific rules for given " + input.type);
+    throw new Error("No specific rules for given " +
+      input.type +
+      ". This tool only supports ECMAScript 5 and below.");
   }
 );
 
