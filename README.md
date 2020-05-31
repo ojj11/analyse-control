@@ -19,6 +19,8 @@ npm install analyse-control --save
 
 ## Introduction
 
+[ECMAScript 5](https://github.com/estree/estree/blob/master/es5.md) and below are supported.
+
 Given this example piece of [ECMAScript 5](https://github.com/estree/estree/blob/master/es5.md) (JavaScript) as input:
 
 ```javascript
