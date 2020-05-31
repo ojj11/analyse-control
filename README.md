@@ -1,7 +1,7 @@
 Analyse-Control
 ===============
 
-![Node.js CI](https://github.com/ojj11/analyse-control/workflows/Node.js%20CI/badge.svg)
+![Node.js CI](https://github.com/ojj11/analyse-control/workflows/Node.js%20CI/badge.svg) [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fojj11%2Fanalyse-control.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fojj11%2Fanalyse-control?ref=badge_shield)
 
 **Extract the control flow graph from a script.**
 Control flow refers to what order a set of instructions execute in. By using
