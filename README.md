@@ -1,6 +1,8 @@
 Analyse-Control
 ===============
 
+![Node.js CI](https://github.com/ojj11/analyse-control/workflows/Node.js%20CI/badge.svg)
+
 **Extract the control flow graph from a script.**
 Control flow refers to what order a set of instructions execute in. By using
 conditional statements and loops, the order of a set of instructions can be
