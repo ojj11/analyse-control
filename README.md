@@ -16,6 +16,9 @@ a graph of nodes.
 npm install analyse-control --save
 ```
 
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fojj11%2Fanalyse-control.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fojj11%2Fanalyse-control?ref=badge_large)
+
 ## Introduction
 
 [ECMAScript 5](https://github.com/estree/estree/blob/master/es5.md) and below are supported.
@@ -291,6 +294,7 @@ method recursively to obtain a copy of the original AST.
 ## Running visualiser
 
 ![Image of visualisation tool](docs/flow_animation.gif)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fojj11%2Fanalyse-control.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fojj11%2Fanalyse-control?ref=badge_shield)
 
 > Use `npx analyse-control ./path/to/script.js` to see a visualisation of the
   control flow graph of a given script
