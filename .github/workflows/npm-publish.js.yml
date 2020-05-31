@@ -1,0 +1,30 @@
+name: Publish on merge
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 12
+        registry-url: https://registry.npmjs.org/
+    - run: npm ci
+
+    - name: Automated Version Bump
+      uses: phips28/gh-action-bump-version@v7.1.0
+      with:
+        tag-prefix: ""
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - run: |
+        npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{secrets.npm_token}}
