@@ -26,6 +26,7 @@ var blockKeys = [
 
 var dispatcher = new morphic();
 var enumerate = new morphic();
+var getScopes = new morphic();
 
 dispatcher.with(
   morphic.Object("list"),
@@ -73,14 +74,34 @@ enumerate.with(
 
 enumerate.otherwise().return([]);
 
-module.exports = function hoist(nodeList) {
+getScopes.with(
+  morphic.Number("id"),
+  {
+    "type": "Program"
+  }
+).then((r) => [r.id]);
 
+getScopes.with(
+  morphic.Number(),
+  {
+    "type": either([
+      "FunctionDeclaration",
+      "FunctionExpression",
+      "ArrowExpression"
+    ]),
+    "body": morphic.Number("id")
+  }
+).then((r) => [r.id]);
+
+getScopes.otherwise().return([]);
+
+function hoistScope(entryNode, nodeList) {
   var flows = [];
 
-  var declarations = dispatcher(nodeList, 0);
+  var declarations = dispatcher(nodeList, entryNode);
 
   var end = {
-    node: 0,
+    node: entryNode,
     type: "hoist"
   };
 
@@ -91,9 +112,16 @@ module.exports = function hoist(nodeList) {
   });
 
   flows.push(hoistNode(end, {
-    node: 0,
+    node: entryNode,
     type: "start"
   }));
 
   return flows;
+}
+
+module.exports = function hoist(nodeList) {
+
+  return nodeList.flatMap((node, i) => getScopes(i, node))
+    .flatMap((entry) => (hoistScope(entry, nodeList)))
+    .toJS();
 }

@@ -128,4 +128,113 @@ describe("integration", function() {
     ], nodes);
   });
 
+  it("should be able to visualise a for statement", function() {
+
+    var input = `
+for(
+  var x = 1;
+  x <= 3;
+  x += 1
+) {
+  console.log("Testing " + x);
+}
+    `;
+
+    input = input.split("\n").filter((line) => (line.trim() != "")).join("\n");
+
+    var ast = acorn.parse(input, {
+      locations: true
+    });
+
+    assert.equal(
+      `
+........|for(
+........|  var x = 1;
+.+-+-+->|  x <= 3;
+.|.|.+->|  x += 1
+.|.|.|..|) {
+.|.+-+->|  console.log("Testing " + x);
+.+----->|}
+      `.split("\n").filter((line) => (line.trim() != "")).join("\n"),
+      analyse.visualise(analyse(ast), input, {
+        defaultSpacer: ".",
+        gutterSeperator: "|",
+      })
+    );
+  });
+
+  it("should be able to visualise an if statement", function() {
+
+    var input = `
+if(true) {
+  console.log("I'm a happy program");
+} else {
+  console.log("I'm a sad program");
+}
+    `;
+
+    input = input.split("\n").filter((line) => (line.trim() != "")).join("\n");
+
+    var ast = acorn.parse(input, {
+      locations: true
+    });
+
+    assert.equal(
+      `
+...+-+--|if(true) {
+.+-|-+->|  console.log("I'm a happy program");
+.|.|....|} else {
+.|.+--->|  console.log("I'm a sad program");
+.+----->|}
+      `.split("\n").filter((line) => (line.trim() != "")).join("\n"),
+      analyse.visualise(analyse(ast), input, {
+        defaultSpacer: ".",
+        gutterSeperator: "|",
+      })
+    );
+  });
+
+  it("should be able to visualise a switch statement", function() {
+
+    var input = `
+switch(x) {
+  case 1:
+    console.log("it's 1");
+    break;
+  case 2:
+    console.log("it's 2");
+    break;
+  default:
+    console.warn("I'm confused");
+    break;
+}
+    `;
+
+    input = input.split("\n").filter((line) => (line.trim() != "")).join("\n");
+
+    var ast = acorn.parse(input, {
+      locations: true
+    });
+
+    assert.equal(
+      `
+..........|switch(x) {
+.....+-+--|  case 1:
+.....|.+->|    console.log("it's 1");
+.+---|----|    break;
+.|...+-+->|  case 2:
+.|...|.+->|    console.log("it's 2");
+.|.+-|----|    break;
+.|.|.|....|  default:
+.|.|.+--->|    console.warn("I'm confused");
+.|.|......|    break;
+.+-+----->|}
+      `.split("\n").filter((line) => (line.trim() != "")).join("\n"),
+      analyse.visualise(analyse(ast), input, {
+        defaultSpacer: ".",
+        gutterSeperator: "|",
+      })
+    );
+  });
+
 });

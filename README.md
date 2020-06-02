@@ -176,6 +176,45 @@ execute).
 syntax tree) from a parser like [acorn](https://www.npmjs.com/package/acorn) it
 will return a control flow graph "Graph".
 
+### `analyse.visualise(graph: Graph, input: String, options: Options) : String`
+
+Run the visualiser and get the string that would be output. There are a few
+options to control the visual output. An example configuration would be:
+
+```JSON
+{
+  "printLines": true,
+  "gutterSeparator": "┤ ",
+  "defaultSpacer": "┄",
+  "verticalLineCharacter": "│",
+  "horizontalLineCharacter": "┄",
+  "endArrowCharacter": "┄",
+  "defaultVerticalConnector": "⚬",
+  "upVerticalConnector": "↑",
+  "downVerticalConnector": "↓"
+}
+```
+
+This configuration will output a visualisation like:
+
+```javascript
+┄┄┄⚬┄⚬┄┄┤ if (typeof module !== 'undefined' && module.exports) {
+┄┄┄│┄↓┄┄┤     package.default = package;
+┄⚬┄│┄┄┄┄┤     module.exports = package;
+┄│┄│┄┄┄┄┤ }
+┄│┄↓┄⚬┄┄┤ else if (typeof define === 'function' && typeof define.amd === 'object' && define.amd) {
+┄│┄│┄│┄┄┤     // register as 'classnames', consistent with npm package name
+┄│┄│┄↓┄┄┤     define('package', [], function () {
+┄│┄│┄│┄┄┤         return package;
+┄│┄│┄↓┄┄┤     });
+┄│┄│┄│┄┄┤ }
+┄│┄│┄│┄┄┤ else {
+┄│┄↓┄│┄┄┤     window.package = package;
+┄↓┄┄┄↓┄┄┤ }
+```
+
+See the section below on running the visualiser as a stand-alone `npx` command.
+
 ### `Graph.getStartOfFlow() : FlowNode`
 
 The control flow graph can either be traversed from start to finish, or from
@@ -190,6 +229,26 @@ Similar to the method above, but this method will return the last executed
 node, which will also be [Program](https://github.com/estree/estree/blob/master/es5.md#programs).
 
 `Graph.getEndOfFlow().isExit()` will be true.
+
+### `Graph.getMethods() : [Method]`
+
+Returns all methods found in the given AST.
+
+### `Method.getMethodNode() : ASTNode`
+
+Gets a representation of the `FunctionDeclaration`, `FunctionExpression` or
+`ArrowExpression` that defines the method.
+
+It will have all the inner ASTNodes replaced by numerical placeholders. Use
+`Graph.getNode(int)` method recursively to obtain a copy of the original AST.
+
+### `Method.getStartOfFlow() : FlowNode`
+
+Similar to `Graph.getStartOfFlow()`, but for this method.
+
+### `Method.getEndOfFlow() : FlowNode`
+
+Similar to `Graph.getEndOfFlow()`, but for this method.
 
 ### `FlowNode.isHoist() : Boolean`
 
@@ -288,12 +347,26 @@ method recursively to obtain a copy of the original AST.
 
     npm it
 
-## Running visualiser
-
-![Image of visualisation tool](docs/flow_animation.gif)
+## Running the visualiser
 
 > Use `npx analyse-control ./path/to/script.js` to see a visualisation of the
   control flow graph of a given script
+
+```javascript
+  +-+--│ if (typeof module !== 'undefined' && module.exports) {
+  | +->│     package.default = package;
++-|----│     module.exports = package;
+| |    │ }
+| +-+->│ else if (typeof define === 'function' && typeof define.amd === 'object' && define.amd) {
+| | |  │     // register as 'package', consistent with npm package name
+| | +->│     define('package', [], function () {
+| | |  │         return package;
+| | +->│     });
+| | |  │ }
+| | |  │ else {
+| +-|->│     window.package = package;
++---+->│ }
+```
 
 ## Known issues
 
