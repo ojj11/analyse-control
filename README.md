@@ -212,9 +212,10 @@ the output is `undefined`.
 This library will correctly return `hoist` flows to cover this behaviour. The
 FlowNodes will be marked as `isHoist() == true`
 
-Note this library specifically adheres to the
-[Chrome/IE/Safari](http://code.google.com/p/v8/issues/detail?id=437)
-standard way of hoisting non-standard conditional declarations.
+Note this library adheres to the
+[ECMAScript 5](http://www.ecma-international.org/ecma-262/5.1/#sec-13)
+hoisting definition, where function declarations inside statements are not
+hoisted.
 
 ### `FlowNode.isEnter() : Boolean`
 
