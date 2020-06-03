@@ -4,6 +4,8 @@ var continue_and_break = require("./continue_break_control");
 var hoist = require("./hoist");
 var switchControl = require("./switch_control");
 var immutable = require("immutable");
+var methods = require("./methods");
+var visualiserCore = require("./visualiserCore");
 
 /**
  * Creates a new flow given the node list, all the flows, and specifically which
@@ -109,10 +111,32 @@ Flow.prototype.getForwardFlows = function() {
   }).toJS();
 }
 
+function Method(nodeList, flows, methodNode, bodyNode) {
+  this.nodeList = nodeList;
+  this.flows = flows;
+  this.methodNode = methodNode;
+  this.bodyNode = bodyNode;
+}
+
+Method.prototype.getMethodNode = function() {
+  return this.methodNode;
+}
+
+Method.prototype.getStartOfFlow = function() {
+  return new Flow(
+    this.nodeList, this.flows, {node: this.bodyNode, type: "hoist"}, "hoist");
+}
+
+Method.prototype.getEndOfFlow = function() {
+  return new Flow(
+    this.nodeList, this.flows, {node: this.bodyNode, type: "end"}, "end");
+}
+
 /**
  * Gets the flows from a given AST. Call .getStartOfFlow() or .getEndOfFlow() to
  * grab the start or end statements. Call .getNode(n) to get a node from a
- * specific index
+ * specific index. Call .getMethods() to get the methods that are defined in the
+ * program.
  */
 module.exports = function(ast) {
   var out = generateLabels(ast);
@@ -135,5 +159,13 @@ module.exports = function(ast) {
       out, flows, {node: 0, type: "end"}, "end"
     )),
     getNode: (node) => (out.get(node)),
+    getMethods: () => (methods(out).map((r) => (
+      new Method(out, flows, out.get(r.method), r.body)
+    )))
   }
 }
+
+/**
+ * Enables implementers to quickly visualise control flow for the given input
+ */
+module.exports.visualise = visualiserCore;
