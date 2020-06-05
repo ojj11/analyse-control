@@ -14,16 +14,6 @@ function hoistNode(a, b) {
   };
 }
 
-var blockKeys = [
-  "consequent",
-  "alternate",
-  "body",
-  "test",
-  "init",
-  "left",
-  "declarations"
-];
-
 var dispatcher = new morphic();
 var enumerate = new morphic();
 
@@ -41,23 +31,22 @@ enumerate.with(
   morphic.Object("list"),
   morphic.Number("id"),
   {
-    "type": either([
-      "IfStatement",
-      "LabeledStatement",
-      "BlockStatement",
-      "WhileStatement",
-      "DoWhileStatement",
-      "ForStatement",
-      "ForOfStatement",
-      "ForInStatement",
-      "Program",
-      "VariableDeclaration"
-    ])
+    "type": "Program",
+    "body": morphic.Object("elements")
   }
 ).then(
-  (r, list, id, input) => flatten(blockKeys
-    .filter(key => input[key] != undefined)
-    .map(key => dispatcher(r.list, input[key])))
+  (r, list, id, input) => dispatcher(r.list, r.elements)
+);
+
+enumerate.with(
+  morphic.Object("list"),
+  morphic.Number("id"),
+  {
+    "type": "VariableDeclaration",
+    "declarations": morphic.Object("elements")
+  }
+).then(
+  (r, list, id, input) => dispatcher(r.list, r.elements)
 );
 
 enumerate.with(

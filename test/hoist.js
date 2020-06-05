@@ -43,7 +43,7 @@ describe("hoisting", function() {
     assert.ok(stringRepresentation.indexOf("2.hoist -> 0.start") != -1);
   });
 
-  it("should hoist a var declaration in an if block", function() {
+  it("should not hoist a var declaration in an if block", function() {
     // nodeList for `if (false) {var x = true}`
     var nodeList = new List([
       {
@@ -88,13 +88,12 @@ describe("hoisting", function() {
 
     var declarations = hoist(nodeList);
 
-    assert.equal(2, declarations.length);
+    assert.equal(1, declarations.length);
     var stringRepresentation = declarations.map(r =>
       r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
     );
 
-    assert.ok(stringRepresentation.indexOf("0.hoist -> 5.hoist") != -1);
-    assert.ok(stringRepresentation.indexOf("5.hoist -> 0.start") != -1);
+    assert.ok(stringRepresentation.indexOf("0.hoist -> 0.start") != -1);
   });
 
   it("should hoist a simple function declaration", function() {
@@ -134,7 +133,7 @@ describe("hoisting", function() {
     assert.ok(stringRepresentation.indexOf("1.hoist -> 0.start") != -1);
   });
 
-  it("should hoist a simple function declaration in an if block", function() {
+  it("should not hoist a simple function declaration in an if block", function() {
     // nodeList for `if (false) {function test() {}}`
     var nodeList = new List([
       {
@@ -176,13 +175,12 @@ describe("hoisting", function() {
 
     var declarations = hoist(nodeList);
 
-    assert.equal(2, declarations.length);
+    assert.equal(1, declarations.length);
     var stringRepresentation = declarations.map(r =>
       r.start.node + "." + r.start.type + " -> " + r.end.node + "." + r.end.type
     );
 
-    assert.ok(stringRepresentation.indexOf("0.hoist -> 4.hoist") != -1);
-    assert.ok(stringRepresentation.indexOf("4.hoist -> 0.start") != -1);
+    assert.ok(stringRepresentation.indexOf("0.hoist -> 0.start") != -1);
   });
 
   it("should hoist in order", function() {
